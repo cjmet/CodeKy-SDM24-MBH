@@ -25,7 +25,7 @@
         <ApplicationTitle>SDM24MBH</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.sdm24_mbh</ApplicationId>
+        <ApplicationId>com.companyname.sdm24mbh</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
