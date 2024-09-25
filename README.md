@@ -64,14 +64,19 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 1. Initial Setup and Tutorial 
     a. [Microsoft: Build a .NET MAUI Blazor Hybrid app](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui?view=aspnetcore-8.0)
+        a. Make sure to test the default app on both Android and Windows.
     a. [Microsoft: Build a mobile and desktop app with Blazor Hybrid and .NET MAUI](https://learn.microsoft.com/en-us/training/modules/build-blazor-hybrid/)
     a. Add a "Delete Completed Items Button"
         a. `<button @onclick="()=>todos.RemoveAll(todo => todo.IsDone)">Delete Done (Inline)</button>`
-1. CRUD
+    a. Don't forget to test on Android in addition to Windows.
+    
+    CHECKLIST:
     - [x] Create
     - [x] Read
     - [x] Update
-    - [x] Delete - Add Delete Buttons
+    - [x] Delete
+    - [x] Android Testing
+
 1. Project Structure, more Blazor details, and examples.
     a. <sup style="color: gold; font-weight: bold"> &#9733; </sup> [Project Structure for Blazor Apps](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/project-structure)
     a. [Build a Blazor Movie Database](https://learn.microsoft.com/en-us/aspnet/core/blazor/tutorials/movie-database-app/?view=aspnetcore-8.0)
