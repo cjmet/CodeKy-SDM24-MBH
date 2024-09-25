@@ -9,6 +9,12 @@
 <button @onclick="LoadProducts">Load Products</button>
 <button @onclick="SaveProducts">Save Products</button>
 <button @onclick="DeleteProducts">Delete Products</button>
+<label class="spacer"> &emsp; </label>
+<button @onclick="NIA">Show All</button>
+<button @onclick="NIA">Show In-Stock</button>
+<button @onclick="NIA">Show Out-of-Stock</button>
+<button @onclick="NIA">Inventory Value</button>
+<button @onclick="NIA">Search</button>
 <br>
 
 @{
@@ -24,20 +30,20 @@
         }
         <li>
             <input type="checkbox" @bind="product.Value.isSelected" />
-            <label>@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
+            <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
+            @*
             <input @bind="product.Value.Department" />
             <input @bind="product.Value.Category" />
             <input @bind="product.Value.SubCategory" />
             <input @bind="product.Value.Section" />
             <input @bind="product.Value.SubSection" />
-
             <br />
-
             <label>&emsp; &emsp; &emsp;</label>
+            *@            
             <input @bind="product.Value.Name" />
-            <input @bind="product.Value.Description" />
-            <input @bind="product.Value.Price" />
-            <input @bind="product.Value.Quantity" />
+            <input @bind="product.Value.Description" style="width: 30em;" />
+            <label> &nbsp Qty:</label><input @bind="product.Value.Quantity" type="number" style="width: 4em; text-align: right;" />
+            <label> &nbsp  $</label><input @bind="product.Value.Price" type="number" style="width: 5.25em; text-align: right;" />
         </li>
     }
 </ul>
@@ -123,20 +129,20 @@
         _products = new SortedDictionary<int, Product>
     {
         { 1, new Product { Id = 1, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Purina Cat Chow", Description = "Complete and Balanced Cat Food", Price = 15.99m, Quantity = 100 } },
-        { 2, new Product { Id = 2, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Meow Mix", Description = "Complete and Balanced Cat Food", Price = 12.99m, Quantity = 100 } },
-        { 3, new Product { Id = 3, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Iams", Description = "Complete and Balanced Cat Food", Price = 17.99m, Quantity = 100 } },
-        { 4, new Product { Id = 4, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Hills Science Diet", Description = "Complete and Balanced Cat Food", Price = 19.99m, Quantity = 100 } },
-        { 5, new Product { Id = 5, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Royal Canin", Description = "Complete and Balanced Cat Food", Price = 21.99m, Quantity = 100 } },
-        { 6, new Product { Id = 6, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Blue Buffalo", Description = "Complete and Balanced Cat Food", Price = 23.99m, Quantity = 100 } },
-        { 7, new Product { Id = 7, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Purina Pro Plan", Description = "Complete and Balanced Cat Food", Price = 25.99m, Quantity = 100 } },
-        { 8, new Product { Id = 8, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina", Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 100 } },
-        { 9, new Product { Id = 9, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Meow Mix", Name = "Meow Mix", Description = "Complete and Balanced Dog Food", Price = 12.99m, Quantity = 100 } },
-        { 10, new Product { Id = 10, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Iams", Name = "Iams", Description = "Complete and Balanced Dog Food", Price = 17.99m, Quantity = 100 } },
-        { 11, new Product { Id = 11, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Hills Science Diet", Name = "Hills Science Diet", Description = "Complete and Balanced Dog Food", Price = 19.99m, Quantity = 100 } },
-        { 12, new Product { Id = 12, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Royal Canin", Name = "Royal Canin", Description = "Complete and Balanced Dog Food", Price = 21.99m, Quantity = 100 } },
-        { 13, new Product { Id = 13, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Blue Buffalo", Name = "Blue Buffalo", Description = "Complete and Balanced Dog Food", Price = 23.99m, Quantity = 100 } },
-        { 14, new Product { Id = 14, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina Pro Plan", Name = "Purina Pro Plan", Description = "Complete and Balanced Dog Food", Price = 25.99m, Quantity = 100 } },
-        { 15, new Product { Id = 15, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina", Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 99 } }
+        { 2, new Product { Id = 2, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Meow Mix", Description = "Complete and Balanced Cat Food", Price = 12.99m, Quantity = 0 } },
+        { 3, new Product { Id = 3, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Iams", Description = "Complete and Balanced Cat Food", Price = 17.99m, Quantity = 62 } },
+        { 4, new Product { Id = 4, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Hills Science Diet", Description = "Complete and Balanced Cat Food", Price = 19.99m, Quantity = 0 } },
+        { 5, new Product { Id = 5, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Royal Canin", Description = "Complete and Balanced Cat Food", Price = 9999.99m, Quantity = 9999 } },
+        { 6, new Product { Id = 6, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Blue Buffalo", Description = "Complete and Balanced Cat Food", Price = 23.99m, Quantity = 0 } },
+        { 7, new Product { Id = 7, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Purina Pro Plan", Description = "Complete and Balanced Cat Food", Price = 25.99m, Quantity = 31 } },
+        { 8, new Product { Id = 8, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina", Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 0 } },
+        { 9, new Product { Id = 9, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Woof Mix", Name = "Woof Mix", Description = "Complete and Balanced Dog Food", Price = 12.99m, Quantity = -1 } },
+        { 10, new Product { Id = 10, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Iams", Name = "Iams", Description = "Complete and Balanced Dog Food", Price = 17.99m, Quantity = 11 } },
+        { 11, new Product { Id = 11, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Hills Science Diet", Name = "Hills Science Diet", Description = "Complete and Balanced Dog Food", Price = 19.99m, Quantity = 0 } },
+        { 12, new Product { Id = 12, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Royal Canin", Name = "Royal Canin", Description = "Complete and Balanced Dog Food", Price = 21.99m, Quantity = 123 } },
+        { 13, new Product { Id = 13, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Blue Buffalo", Name = "Blue Buffalo", Description = "Complete and Balanced Dog Food", Price = 23.99m, Quantity = 0 } },
+        { 14, new Product { Id = 14, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina Pro Plan", Name = "Purina Pro Plan", Description = "Complete and Balanced Dog Food", Price = 25.99m, Quantity = 11 } },
+        { 15, new Product { Id = 15, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina", Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 456 } }
     };
     }
 }

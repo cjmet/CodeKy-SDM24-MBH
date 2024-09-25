@@ -116,7 +116,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
                         @("Too many products");
                         break;
                     }
-                    @* Snipped for Brevity *@
+                    @* --- Snipped for Brevity --- *@
             ```
             1. Another non-standard way to do this would be a span, but it throws a warning:
             ```
@@ -145,15 +145,15 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
                 { 1, new Product { Id = 1, Name = "Product 1", Description="Description 1", Price = 100, Quantity = 1 } },
                 { 2, new Product { Id = 2, Name = "Product 2", Description="Description 2", Price = 200, Quantity = 2 } },
                 { 3, new Product { Id = 3, Name = "Product 3", Description="Description 3", Price = 300, Quantity = 3 } },
-                // Snipped for Brevity
+                // --- Snipped for Brevity ---
             ```         
         1. Test that and make sure everything is working and wired up correctly.
         
      1. You should probably check that the dictionary keys match the product ids.
         1. Something like `<label>@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>`
         1. Then create one product that purposely has a mismatched key and id to test it.
-     1. Now lets start wiring up those buttons.
-        1. Start with the Add Buttton, this should be just like what you did in the tutorials.
+     1. Now lets wire up those buttons.
+        1. Begin with the Add Buttton, this should be just like what you did in the tutorials.
             1. make sure to use an unique Id for each product. Ex: `var Id = _products.Keys.Max() + 1;`
             1. Don't forget to set the product.ID field as well as the Dictionay.Key.
             1. After You've added the product, clear the input fields.  
@@ -189,13 +189,39 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
         1. Update the test products to include the new fields.
         1. Oops. Now we need a way to NOT load the old products. 
             1. How about we check to see if the list size is 0, then not load the (empty) products list?
-        1. <span style="color: gold;"> &#9733; </span> Don't forget to Test it on Android.
+        1. Don't forget to Test it on Android.
+        1. Ok, the tabs just didn't work on android.  So we'll remove them and live without them on windows.
+        1. Also, I forgot to add in edit tabs for adding categories and such ... of course you can add the item, then edit that in, so I'm calling it good enough, if cheaty.
+        1. Now that we got that far, lets go ahead and comment out the categories, we aren't going to use them going forward, at least not for now.  There's plenty to learn, and it'll be less messy without them.
+        1. Ok .. next ... 
+     1. Spacing?  I know I said minimal skeleton, but it really needs at least a microscopic amount of work.
+        1. Ex: 
+            ```
+            @* --- Snipped for Brevity --- *@
+            <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
+            @* --- Snipped for Brevity --- *@
+            <input @bind="product.Value.Description" style="width: 30em;" />
+            <label> &nbsp Qty:</label><input @bind="product.Value.Quantity" type="number" style="width: 4em; text-align: right;" />
+            <label> &nbsp  $</label><input @bind="product.Value.Price" type="number" style="width: 5.25em; text-align: right;" />
+            ```
+        1. We should probably do tables or grids instead.  But that's a bit more complicated, so we'll leave that for later.
+        1. That description width is probably going to bite us on android.  It may need to be smaller.  It might need to be a different component all together.  We'll see.
+
 
 ---
 
 ### Part 3
 
-1. ...
+1. <span id= "star" style="color: gold;"> &#9733; </span> Product Logic ... We've come to the point that it's going to become too painful to not recreate the product logic class and probably the interface as well.  So it's time to refactor and add in our pet shop functions: GetAllProducts, GetProduct, AddProduct, UpdateProduct, DeleteProduct, GetInStock, GetOutOfStock, GetInventoryValue, ... 
+    1. .... 
+	
+
+---
+
+### To Be Continued ...
+
+ 
+1. ... 
 
 1. 1. Project Structure, more Blazor details, and examples.
    1. [Project Structure for Blazor Apps](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/project-structure)
@@ -213,9 +239,13 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 ### Project Blog:
 
+#### 2024/09/25
+- Began work on Part 2 
+- ... 
+
 #### 2024/09/24
 
-- Started on Part 1.b ...
+- Began work on Part 1.b ...
 - @expression(), @code, @functions, ...
 - @bind, @onchange, @onclick, @onsubmit, ...
 - Razor component file names require a capitalized first letter.
