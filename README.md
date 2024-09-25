@@ -11,14 +11,13 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 - Some minimal effort will be made to restrict the project to libraries and features that are compatible with all platforms. Although some platform specific features may be included, such as the use of the android emulator.
 
 &nbsp;
-
-## Development Hardware Requirements
+### Development Hardware Requirements
 
 - **8 physical hardware cores with 12+ gigabytes of memory is strongly recommended.**
 - Physical hardware SSD with a direct local path, with no spaces in the path names.
   - Ex: c:\users\username\local\Solution47\Project23
 
-### &emsp; Hardware Details
+#### &ensp;Hardware Details
 
 - 8 performance cores are preferred, but 4 performance cores with 4 additional efficiency cores will work with some impact on performance.
   - As an Example: For Desktops an i7-xx700 or Ryzen 7, Dated 2020 or newer.
@@ -38,35 +37,61 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 - Networked, Subst, and other drive types will fail to publish unless you complete additional configuration options.
   - [Error DEP0700 : Registration of the app failed.](https://stackoverflow.com/questions/42020845/error-dep0700-registration-of-the-app-failed-on-windows-10-on-a-macbook-dual)
 
+#### &ensp;Personal VM Note
+- Responsiveness vs Peak Performance
+  - (6 vCores <sup>P-2</sup>, 16 gb static memory) is considerably more responsive, snappier, vs (12 vCores, 24 gb dynamic memory) which has twice the peak performance under load.
+  
 &nbsp;
-
-## Important Notes
+### Important Notes
 
 - Do not modify the .csproj targets, as this can have unintended consequences. As an example, by default the project should restrict the use of incompatible libraries.
 - Do not use underlines, spaces, or other special characters in the project name. Hyphens are allowed but discouraged.
 - ...
 
+#### &ensp;Additional References
+- [Maui Blazor Platform Features](https://learn.microsoft.com/en-us/training/modules/build-blazor-hybrid/8-platform-features)
+    - [Android Platform Specifics](https://learn.microsoft.com/en-us/dotnet/maui/android/platform-specifics/)
+    - [iOS Platform Specifics](https://learn.microsoft.com/en-us/dotnet/maui/ios/platform-specifics/)
+    - [Windows Platform Specifics](https://learn.microsoft.com/en-us/dotnet/maui/windows/platform-specifics/)
+    - [Invoke Native Platform Code](https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/invoke-platform-code/)
+- [Project Structure for Blazor Apps](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/project-structure)
+- [Preferences]
+- [Local Storage](https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/storage/secure-storage?view=net-maui-8.0&tabs=windows)
+
+
 &nbsp;
+### Project Plan
 
-## Project Plan
-
-1. [Microsoft: Build a .NET MAUI Blazor Hybrid app](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui?view=aspnetcore-8.0)
-1. <sup style="color: gold; font-weight: bold"> &#9733; </sup> [Microsoft: Build a mobile and desktop app with Blazor Hybrid and .NET MAUI](https://learn.microsoft.com/en-us/training/modules/build-blazor-hybrid/)
-1. [Microsoft: Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app?view=aspnetcore-8.0)
+1. Initial Setup and Tutorial 
+    a. [Microsoft: Build a .NET MAUI Blazor Hybrid app](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui?view=aspnetcore-8.0)
+    a. [Microsoft: Build a mobile and desktop app with Blazor Hybrid and .NET MAUI](https://learn.microsoft.com/en-us/training/modules/build-blazor-hybrid/)
+    a. Add a "Delete Completed Items Button"
+        a. `<button @onclick="()=>todos.RemoveAll(todo => todo.IsDone)">Delete Done (Inline)</button>`
+1. CRUD
+    - [x] Create
+    - [x] Read
+    - [x] Update
+    - [x] Delete - Add Delete Buttons
+1. Project Structure, more Blazor details, and examples.
+    a. <sup style="color: gold; font-weight: bold"> &#9733; </sup> [Project Structure for Blazor Apps](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/project-structure)
+    a. [Build a Blazor Movie Database](https://learn.microsoft.com/en-us/aspnet/core/blazor/tutorials/movie-database-app/?view=aspnetcore-8.0)
+    a. [Microsoft: Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app?view=aspnetcore-8.0)
+1. ...
 1. [YouTube: Let's build REST API Client Desktop App using .Net MAUI Blazor Hybrid for Windows and Mac OS Desktop](https://www.youtube.com/watch?app=desktop&v=HKMhgOAZLWw)
 1. [FreeCodeCamp: Learn Blazor WebAssembly and Web API on .NET 6 by Building a Shopping Cart App](https://www.freecodecamp.org/news/learn-blazor-webassembly-and-web-api-on-net-6-by-building-a-shopping-cart-app/)
 1. ...
 
-## Project Notes
+&nbsp;
+### Project Blog:
 
-- ...
+#### 2024/09/24
 
-## Project Blog:
+- Started on Part 1.b ...
+- @expression(), @code, @functions, ... 
+- @bind, @onchange, @onclick, @onsubmit, ...
+- Razor component file names require a capitalized first letter. 
+- Dang, that's already CRUD, of a rough sort.
 
-### 2024/09/24
-
-- Started on Part 2 ...
-
-### 2024/09/23
+#### 2024/09/23
 
 - Created the project and added the README.md file.

@@ -1,0 +1,115 @@
+@page "/todo"
+@using SDM24MBH.Data;
+@using Microsoft.Maui.Storage;
+@using System.IO;
+@using System.Text.Json;
+@using System.Threading.Tasks;
+
+
+
+<h3>ToDo (@todos.Count(todo => !todo.IsDone)) </h3>
+
+<button @onclick="Save">Save</button>
+<button @onclick="Load">Load</button>
+@* <button @onclick="()=>todos.RemoveAll(todo => todo.IsDone)">Delete Done Inline</button>  *@
+@* Ok, that was too easy, lets do it the harder way. *@
+<button @onclick="DeleteDone">Delete Done</button>   
+
+<ul class="list-unstyled">
+    @foreach (var todo in todos)
+    {
+        <li>
+            <input type="checkbox" @bind="todo.IsDone" />
+            <input @bind="todo.Title" />
+        </li>
+    }
+</ul>
+
+<input placeholder="Something todo" @bind="newTodoTitle" />
+<button @onclick="AddTodo">Add todo</button>
+
+@code {
+    private bool useLocalStorage = true;
+    private string? newTodoTitle;
+    private ISecureStorage LocalStorage = SecureStorage.Default;
+    private List<TodoItem> todos = new List<TodoItem> {
+        new TodoItem { Title = "Learn Maui", IsDone = false },
+        new TodoItem { Title = "Learn Blazor", IsDone = false },
+        new TodoItem { Title = "Learn Maui Blazor Hybrid", IsDone = false },
+    };
+
+
+
+    private void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodoTitle))
+        {
+            todos.Add(new TodoItem { Title = newTodoTitle, IsDone = false });
+            newTodoTitle = string.Empty;
+        }
+    }
+
+    private async Task DeleteDone()
+    {
+        // for (int i = todos.Count - 1; i >= 0; i--)
+        // {
+        //     if (todos[i].IsDone)
+        //     {
+        //         todos.RemoveAt(i);
+        //     }
+        // }
+
+        // ParallelForEachAsync():  // Async requires an async type ... Otherwise it DOES Fault and Throw;
+        todos.RemoveAll(todo => todo.IsDone);
+
+        // await this.Save();
+    }
+
+    private async Task Save()
+    {
+        var contents = JsonSerializer.Serialize(todos);
+        if (useLocalStorage) {
+            await LocalStorage.SetAsync("todos", contents);
+            await App.Current.MainPage.DisplayAlert("Saved", $"Saved to Local Storage", "OK");
+        }
+
+        else
+        {
+
+            var path = Path.Combine(FileSystem.AppDataDirectory, "todos.json");
+            await File.WriteAllTextAsync(path, contents);
+            await App.Current.MainPage.DisplayAlert("Saved", $"List has been saved to:\n\t{path}", "OK");
+        }
+    }
+
+    private async Task Load()
+    {
+        if (useLocalStorage)
+        {
+            var data = await LocalStorage.GetAsync("todos");
+            if (data == null)
+            {
+                await App.Current.MainPage.DisplayAlert("Warning", "No data found", "OK");
+                return;
+            }
+            var loadedTodos = JsonSerializer.Deserialize<List<TodoItem>>(data);
+            todos.Clear();
+            todos.AddRange(loadedTodos);
+            await App.Current.MainPage.DisplayAlert("Loaded", $"Loaded from Local Storage", "OK");
+        }
+        else
+        {
+            var path = Path.Combine(FileSystem.AppDataDirectory, "todos.json");
+            if (!File.Exists(path))
+            {
+                await App.Current.MainPage.DisplayAlert("Warning", $"File not found:\n\t{path}", "OK");
+                return;
+            }
+            var contents = await File.ReadAllTextAsync(path);
+            var loadedTodos = JsonSerializer.Deserialize<List<TodoItem>>(contents);
+            todos.Clear();
+            todos.AddRange(loadedTodos);
+            await App.Current.MainPage.DisplayAlert("Loaded", $"Loaded from:\n\t{path}", "OK");
+        }
+    }
+}
