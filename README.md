@@ -206,7 +206,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
             ```
         1. We should probably do tables or grids instead.  But that's a bit more complicated, so we'll leave that for later.
         1. That description width is probably going to bite us on android.  It may need to be smaller.  It might need to be a different component all together.  We'll see.
-
+![Screenshot01](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot01.png?raw=true)
 
 ---
 
