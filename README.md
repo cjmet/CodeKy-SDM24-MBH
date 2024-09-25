@@ -4,6 +4,7 @@
 
 The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined the MAUI multi-platform back end to deliver a full multi-platform package.
 
+- Hardware Requirements: **8 physical hardware cores with 12+ gigabytes of memory is recommended.**
 - It should be expected that this project will take **<u>2x the time to develop</u>** as the standard ASP .NET MVC project, but will be able to target multiple platforms.
 - This is a time-budgeted project. I'm trying get a feel for how viable this alternative may be for students and what kind of time investment this should be expected to take for students. I'm also fairly limited in the time I have to devote to this project. It is entirely possible that it will fail to be completed with-in the given time-budget.
 - This is a demo project, so many more complicated topics and features, such as security and authentication, will be left out, simplified, or glossed over.
@@ -27,7 +28,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 &nbsp;
 ## Development Hardware Requirements
 
-- **8 physical hardware cores with 12+ gigabytes of memory is strongly recommended.**
+- **8 physical hardware cores with 12+ gigabytes of memory is recommended.**
 - Physical hardware SSD with a direct local path, with no spaces in the path names.
   - Ex: c:\users\username\local\Solution47\Project23
 
@@ -241,7 +242,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 #### 2024/09/25
 - Began work on Part 2 
-- ... 
+- I may start on Part 3 next ... but that may wait as well.
 
 #### 2024/09/24
 
