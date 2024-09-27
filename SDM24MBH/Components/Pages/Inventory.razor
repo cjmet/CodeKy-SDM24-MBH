@@ -1,11 +1,13 @@
 ﻿@page "/inventory"
 @using SDM24MBH.Data;
+@using SDM24MBH.Logic;
 @using System.Text.Json;
 @using Microsoft.Maui.Storage;
 @using System.Diagnostics;
 
 <h3>Inventory (@_products.Count)</h3>
 
+<button @onclick="ClearStorage">Clear Storage</button>
 <button @onclick="LoadProducts">Load Products</button>
 <button @onclick="SaveProducts">Save Products</button>
 <button @onclick="DeleteProducts">Delete Products</button>
@@ -31,15 +33,6 @@
         <li>
             <input type="checkbox" @bind="product.Value.isSelected" />
             <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
-            @*
-            <input @bind="product.Value.Department" />
-            <input @bind="product.Value.Category" />
-            <input @bind="product.Value.SubCategory" />
-            <input @bind="product.Value.Section" />
-            <input @bind="product.Value.SubSection" />
-            <br />
-            <label>&emsp; &emsp; &emsp;</label>
-            *@            
             <input @bind="product.Value.Name" />
             <input @bind="product.Value.Description" style="width: 30em;" />
             <label> &nbsp Qty:</label><input @bind="product.Value.Quantity" type="number" style="width: 4em; text-align: right;" />
@@ -53,24 +46,43 @@
 <input placeholder="Price" @bind="newProduct.Price" />
 <input placeholder="Quantity" @bind="newProduct.Quantity" />
 
-<button @onclick="AddProduct">Add Product</button>
+<button @onclick="NIA">Add Product</button>
 
 
 
 
 @code {
+    // Variables
     private Int32 counter = 0;
-    private Product newProduct = new Product();
-    private ISecureStorage LocalStorage = SecureStorage.Default;
-    private SortedDictionary<int, Product> _products = new SortedDictionary<int, Product>
+    private Dictionary<int, IProduct> _products = new Dictionary<int, IProduct>
        {
-        { 1, new Product { Id = 1, Department = "Loading", Category = "Products", SubCategory = "From", Section = "Local Storage", SubSection = "...", 
-        Name = "Products should be loading", Description = "from Local Storage",} }};
+        { 1, new Product { Id = 1, Name = "Products should be loading", Description = "from Local Storage?",}
+        }
+       };
+    private IProduct newProduct = new Product();
+
+
+
+    // Methods
+
+
 
     private async Task NIA()
     {
-        await App.Current.MainPage.DisplayAlert("NIA", $"Not Implemented Alert.", "OK");
-        return;
+        await App.Current.MainPage.DisplayAlert("NIA", "Not Implemented Yet", "OK");
+    }
+
+    private async Task Alert(string message)
+    {
+        await App.Current.MainPage.DisplayAlert("Message", message, "OK");
+    }
+
+    private void ClearStorage()
+    {
+        Debug.WriteLine("Attempting to Clear LocalStorage");
+        var _localStorage = new LocalStorage();
+        _localStorage.ClearStorage();
+        Debug.WriteLine("LocalStorage Cleared");
     }
 
     private void AddProduct()
@@ -83,26 +95,22 @@
 
     private async Task SaveProducts()
     {
-        var contents = JsonSerializer.Serialize(_products);
-        await LocalStorage.SetAsync("products", contents);
+        Debug.WriteLine("Attempting to Save Local Storage");
+        var _localStorage = new LocalStorage();
+        var results = await _localStorage.SaveProducts(_products);
+        Debug.WriteLine($"SaveProducts: {results}");
     }
 
     private async Task LoadProducts()
     {
-        var contents = await LocalStorage.GetAsync("products");
-        if (contents != null)
+        Debug.WriteLine("Attempting to Load Local Storage");
+        var _localStorage = new LocalStorage();
+        _products = await _localStorage.LoadProducts();
+        Debug.WriteLine($"LoadProducts: {_products.Count}");
+        if (_products == null || _products.Count <= 0)
         {
-            var loadedProducts = JsonSerializer.Deserialize<Dictionary<int, Product>>(contents);
-            if (loadedProducts?.Count > 0)
-            {
-                Debug.WriteLine("Loaded Products");
-                _products.Clear();
-                loadedProducts?.ToList().ForEach(p => _products.Add(p.Key, p.Value));
-            }  // else it's empty
-            else
-            {
-                InitTestProducts();
-            }
+            _products = InitTestProducts();
+            Debug.WriteLine($"InitProducts: {_products.Count}");
         }
     }
 
@@ -114,35 +122,51 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        await LoadProducts();
+        return;
+
+        // Debug.WriteLine("OnInitializedAsync");
+
+        // Debug.WriteLine("Attempting to Load ProductLogic");
+        // var _productLogic = new ProductLogic();
+        // Debug.WriteLine("Attempting to GetAllProducts");
+
+        // _products = _productLogic.GetAllProducts();
+        // Debug.WriteLine($"OnInitializedAsync: _products.Count = {_products.Count}");
+        // if (_products == null || _products.Count <= 0)
+        // {
+        //     Debug.WriteLine("OnInitializedAsync: Initializing Products");
+        //     _products = InitTestProducts();
+        //     Debug.WriteLine($"OnInitializedAsync: _products.Count = {_products.Count}");
+        //     Int32 result=0;
+        //     // result = _productLogic.AddUpdateProducts(_products);
+        //     Debug.WriteLine($"OnInitializedAsync: result = {result}");
+        //     if (result <= 0)
+        //     {
+        //         Debug.WriteLine("OnInitializedAsync: FAILED: Initializing Products Failed.");
+        //     }
+        // }
+
     }
 
 
 
-    // ... 
+    // ...
 
 
 
-    protected private void InitTestProducts()
+    protected private Dictionary<int, IProduct> InitTestProducts()
     {
-        Debug.WriteLine("InitTestProducts");
-        _products = new SortedDictionary<int, Product>
+        return new Dictionary<int, IProduct>
     {
-        { 1, new Product { Id = 1, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Purina Cat Chow", Description = "Complete and Balanced Cat Food", Price = 15.99m, Quantity = 100 } },
-        { 2, new Product { Id = 2, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Meow Mix", Description = "Complete and Balanced Cat Food", Price = 12.99m, Quantity = 0 } },
-        { 3, new Product { Id = 3, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Iams", Description = "Complete and Balanced Cat Food", Price = 17.99m, Quantity = 62 } },
-        { 4, new Product { Id = 4, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Hills Science Diet", Description = "Complete and Balanced Cat Food", Price = 19.99m, Quantity = 0 } },
-        { 5, new Product { Id = 5, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Royal Canin", Description = "Complete and Balanced Cat Food", Price = 9999.99m, Quantity = 9999 } },
-        { 6, new Product { Id = 6, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Blue Buffalo", Description = "Complete and Balanced Cat Food", Price = 23.99m, Quantity = 0 } },
-        { 7, new Product { Id = 7, Department = "Pets", Category = "Cats", SubCategory = "Food", Section = "Dry", SubSection = "Kibble", Name = "Purina Pro Plan", Description = "Complete and Balanced Cat Food", Price = 25.99m, Quantity = 31 } },
-        { 8, new Product { Id = 8, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina", Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 0 } },
-        { 9, new Product { Id = 9, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Woof Mix", Name = "Woof Mix", Description = "Complete and Balanced Dog Food", Price = 12.99m, Quantity = -1 } },
-        { 10, new Product { Id = 10, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Iams", Name = "Iams", Description = "Complete and Balanced Dog Food", Price = 17.99m, Quantity = 11 } },
-        { 11, new Product { Id = 11, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Hills Science Diet", Name = "Hills Science Diet", Description = "Complete and Balanced Dog Food", Price = 19.99m, Quantity = 0 } },
-        { 12, new Product { Id = 12, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Royal Canin", Name = "Royal Canin", Description = "Complete and Balanced Dog Food", Price = 21.99m, Quantity = 123 } },
-        { 13, new Product { Id = 13, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Blue Buffalo", Name = "Blue Buffalo", Description = "Complete and Balanced Dog Food", Price = 23.99m, Quantity = 0 } },
-        { 14, new Product { Id = 14, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina Pro Plan", Name = "Purina Pro Plan", Description = "Complete and Balanced Dog Food", Price = 25.99m, Quantity = 11 } },
-        { 15, new Product { Id = 15, Department = "Pets", Category = "Dogs", SubCategory ="Food", Brand = "Purina", Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 456 } }
+        { 1, new Product { Id = 1, Name = "Purina Cat Chow", Description = "Complete and Balanced Cat Food", Price = 15.99m, Quantity = 100 } },
+        { 2, new Product { Id = 2, Name = "Meow Mix", Description = "Complete and Balanced Cat Food", Price = 12.99m, Quantity = 0 } },
+        { 3, new Product { Id = 3, Name = "Iams", Description = "Complete and Balanced Cat Food", Price = 17.99m, Quantity = 62 } },
+        { 4, new Product { Id = 4, Name = "Hills Science Diet", Description = "Complete and Balanced Cat Food", Price = 19.99m, Quantity = 0 } },
+      
+        { 9, new Product { Id = 9, Name = "Woof Mix", Description = "Complete and Balanced Dog Food", Price = 12.99m, Quantity = -1 } },
+        { 10, new Product { Id = 10, Name = "Iams", Description = "Complete and Balanced Dog Food", Price = 17.99m, Quantity = 11 } },
+        { 11, new Product { Id = 11, Name = "Hills Science Diet", Description = "Complete and Balanced Dog Food", Price = 19.99m, Quantity = 0 } },
+        { 15, new Product { Id = 15, Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 456 } }
     };
     }
 }

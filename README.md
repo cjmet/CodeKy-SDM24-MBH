@@ -16,13 +16,12 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 ## Table of Contents
 
 - [Development Hardware Requirements](#development-hardware-requirements)
-  - [Hardware Details](#hardware-details)
-  - [Personal VM Note](#personal-vm-note)
 - [Important Notes](#important-notes)
 - [Additional References](#additional-references)
 - [Project Plan](#project-plan)
   - [Part 1](#part-1)
   - [Part 2](#part-2)
+  - [Part 3](#part-3)
 - [Project Blog](#project-blog)
 
 &nbsp;
@@ -100,7 +99,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
     1. Keep it Simple and Functional First. We'll add Features Later.
     1. Add a modified Product Class from the Petshop to the Data Folder.
         1. Be aware of name spaces.
-        1. Lets keep it simple and only one basic class, no methods, nor interfaces yet.
+        1. Lets keep it simple and only one basic Class, no Methods, nor Interfaces yet.
         1. We can add a Dictionary for Specification that vary by product.
         1. Add an unique Id field.  We'll use this to identify items in a dictionary.
         1. Add an isSelected field.  We'll use this to identify items selected for actions like Add, Delete, Update, Purchase, etc.
@@ -213,13 +212,48 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 ### Part 3
 
-1. <span id= "star" style="color: gold;"> &#9733; </span> Product Logic ... We've come to the point that it's going to become too painful to not recreate the product logic class and probably the interface as well.  So it's time to refactor and add in our pet shop functions: GetAllProducts, GetProduct, AddProduct, UpdateProduct, DeleteProduct, GetInStock, GetOutOfStock, GetInventoryValue, ... 
-    1. .... 
-	
+1. <span id= "star" style="color: gold;"> &#9733; </span> Product Logic ... We've come to the point that it's going to become too painful to not recreate the Product Logic Class and probably the Interface as well.  So it's time to refactor and add in our pet shop functions: GetAllProducts, GetProduct, AddProduct, UpdateProduct, DeleteProduct, GetInStock, GetOutOfStock, GetInventoryValue, ... As well as start looking at the Data level and Interfaces.
+    1. Lets start at the data level and work our way up.
+        1. Create an ILocalStorage Interface and LocalStorage Class in the Data directory.
+            ```
+                ... 
+            ```
+        1. Now Implement the LocalStorage Class
+        1. Keep in mind you can NOT deserialize an interface, so you'll need to use the concrete class in the dictionary and then convert it as needed.
+            ```
+                ...
+            ```
+        1. If you try to deserialize an interface in ISecureStorage in the LocalStorage Class, you'll get a crash in the background that will lock up your app with little indication of what went wrong.  
+        1. Once you have LocalStorage and ILocalStorage implemented, lets wire those into the front end for testing.
+        1. We'll need to add a constructor ... 
+
+### To Be Continued ...
+        
+1. To Be Continued ...
+    1. Create the IProduct Class and IProductLogic Interface in the Data directory
+    1. Implement ProductLogic Class in the Logic directory
+    1. Now we should have a working Product Logic Class, but we need to wire it up to the Inventory Component.  Make sure you've implemented IProduct, IProductLogic, ProductLogic, ILocalStorage, and LocalStorage correctly.
+    1. Check that `Product : IProduct` and `ProductLogic : IProductLogic` are implemented correctly.  I forgot to update one. oops.
+	1. Let refactor Inventory.razor to use the ProductLogic Class.
+		1. Keep in mind there is a bit of a disconnect between the component and the logic.  When we make changes, we need to make sure both the component and the logic are updated.  
+        1. I commented out the extra hierarchy fields, so the refactoring will need to account for that.
+        1. Update all the Product references to use IProduct instead.  
+        1. I'm setting the SortedDictionary back to a regular Dictionary for now.  We can add sorting back in later.  Keep it Simple First.
+        1. In refactoring and working through the logic, I realize we need an AddProducts() plural, not just singular.  Why?  Because I want to init the database with test data and I don't want to (add 1, write) x 10,000.  I want to (add 10,000, write) once.  So I'm going to add that in now.  It may only ever get used in the init but still it's probably a good idea to write it and add it to the Interface(s).
+            1. AddProducts (plural) needs to decide if we will allow over-writing of keys.  If yes, then we can use it as an update function as well.  ~~If no, then we need to check for existing keys and throw an error if we try to add a duplicate key.~~  I'm going to allow over-writing and updating of keys for now. 
+            1. Lets go ahead and use the IDE to reneame AddProducts plural to AddUpdateProdcuts.  This will make it more clear what it does.
+        1. We'll need to add a constructor to the Inventory Component to inject the ProductLogic Class. ??? cjm ???
+			```
+			private readonly IProductLogic _productLogic;
+			public Inventory(IProductLogic productLogic)
+			{
+				_productLogic = productLogic;
+			}
+			```
 
 ---
 
-### To Be Continued ...
+
 
  
 1. ... 
