@@ -4,17 +4,15 @@ namespace SDM24MBH.Logic
 {
     public interface IProductLogic
     {
-        public bool ClearStorage();
-        public int AddProduct(IProduct product);
-        public int AddUpdateProducts(Dictionary<int, IProduct> products);
-        public IProduct? GetProductById(int id);
-        public bool UpdateProduct(IProduct product);
-        public bool DeleteProduct(int id);
+        public Task<Boolean> ClearStorage();    // Utility
+        public Task<Int32> AddProduct(IProduct product);    // Create
+        public Task<Dictionary<int, IProduct>> GetAllProducts();    // Read
+        public Task<Int32> AddUpdateProducts(Dictionary<int, IProduct> products);   // Update
+        public Task<Int32> DeleteProducts(List<int> keysToDelete);  // Delete
 
-        public Dictionary<int, IProduct> GetAllProducts();
-        public Dictionary<int, IProduct> GetInStockProducts();
-        public Dictionary<int, IProduct> GetOutOfStockProducts();
 
-        public decimal GetTotalValueOfStock();
+        public Task<Dictionary<int, IProduct>> GetInStockProducts();
+        public Task<Dictionary<int, IProduct>> GetOutOfStockProducts();
+        public Task<decimal> GetTotalValueOfStock();
     }
 }

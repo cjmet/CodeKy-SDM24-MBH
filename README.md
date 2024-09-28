@@ -5,6 +5,7 @@
 The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined the MAUI multi-platform back end to deliver a full multi-platform package.
 
 - Hardware Requirements: **8 physical hardware cores with 12+ gigabytes of memory is recommended.**
+- Class Requirements: Module 3 or Module 4 with some understanding of Async and Await.
 - It should be expected that this project will take **<u>2x the time to develop</u>** as the standard ASP .NET MVC project, but will be able to target multiple platforms.
 - This is a time-budgeted project. I'm trying get a feel for how viable this alternative may be for students and what kind of time investment this should be expected to take for students. I'm also fairly limited in the time I have to devote to this project. It is entirely possible that it will fail to be completed with-in the given time-budget.
 - This is a demo project, so many more complicated topics and features, such as security and authentication, will be left out, simplified, or glossed over.
@@ -97,13 +98,25 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 1. Apply what we've learned so far to a simplified version of the Pet Shop Project
     1. Keep it Simple and Functional First. We'll add Features Later.
-    1. Add a modified Product Class from the Petshop to the Data Folder.
+    1. `async void` should only be used for event handlers.
+        1. `async Task` should be used for all other 'async void' methods.
+    1. Add a modified Product Class and Interface from the Petshop to the Data Folder.
         1. Be aware of name spaces.
-        1. Lets keep it simple and only one basic Class, no Methods, nor Interfaces yet.
-        1. We can add a Dictionary for Specification that vary by product.
+        1. Lets keep it simple and only one basic Class.
         1. Add an unique Id field.  We'll use this to identify items in a dictionary.
         1. Add an isSelected field.  We'll use this to identify items selected for actions like Add, Delete, Update, Purchase, etc.
-
+            ```
+            public class Product : IProduct
+            {
+                public Int32 Id { get; set; }
+                public Boolean isSelected { get; set; } = false;
+                public String Brand { get; set; } = "";
+                public String Name { get; set; } = "";
+                public String Description { get; set; } = "";
+                public Decimal Price { get; set; }
+                public Int32 Quantity { get; set; }
+            }
+            ```
     1. Add an Inventory link to the Nav
     1. Add an Inventory.razor component
         1. Have it display up to 10 lines of inventory, we can add paging later.
@@ -123,7 +136,6 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
             <span>Too many products</span> 
             ```
         1. Model it after the ToDo page. 
-        1. Ignore the Specifications for now, that can be added later. 
         1. You'll need Buttons and Inputs for CRUD: Add, Load, Save, and Delete
         1. We want to keep things simple and functional first.  Get the skeleton's syntax and struture correct and functioning first.  So for now just set the buttons up with a simple alert message.  We'll fix the actual functions later.
             ```
@@ -161,12 +173,9 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
                 1. `newProduct = new Product();`
             1. Test it.
         1. Then move on to the other buttons, testing each one as you go.
-        1. It might be nice to sort the list by ID?  Try that.
-        1. Test It.
         1. We should really load the products from file by default.  
             1. [Microsoft: Blazor Component lifecycle](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/components#component-lifecycle)
-            1. lets try: OnAfterRenderAsync(), ... 
-            1. Ok, that didn't work.  Lets try OnInitializedAsync()...
+            1. Lets try OnInitializedAsync()...
                 ```
                 protected override async Task OnInitializedAsync()
                 {
@@ -181,19 +190,6 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
             1. copy logo.png to wwwroot
             1. `<img src="logo.png" alt="Logo" />`
         1. Don't forget to test on Android as well as Windows.
-     1. Now lets add some organizational Hierarchy
-        1. Department, Category, SubCategory, Section, Subsection, Brand
-        1. Put that into our Inventory Component page, maybe using two lines with the Hirarchy on the first line and the products on the second.
-        1. Avoiding getting into tables, grids, and such, just put a few tabs in front of the second line to help with spacing. 
-        1. `<label>&emsp; &emsp; &emsp;</label>`
-        1. Update the test products to include the new fields.
-        1. Oops. Now we need a way to NOT load the old products. 
-            1. How about we check to see if the list size is 0, then not load the (empty) products list?
-        1. Don't forget to Test it on Android.
-        1. Ok, the tabs just didn't work on android.  So we'll remove them and live without them on windows.
-        1. Also, I forgot to add in edit tabs for adding categories and such ... of course you can add the item, then edit that in, so I'm calling it good enough, if cheaty.
-        1. Now that we got that far, lets go ahead and comment out the categories, we aren't going to use them going forward, at least not for now.  There's plenty to learn, and it'll be less messy without them.
-        1. Ok .. next ... 
      1. Spacing?  I know I said minimal skeleton, but it really needs at least a microscopic amount of work.
         1. Ex: 
             ```
@@ -212,48 +208,334 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 ### Part 3
 
-1. <span id= "star" style="color: gold;"> &#9733; </span> Product Logic ... We've come to the point that it's going to become too painful to not recreate the Product Logic Class and probably the Interface as well.  So it's time to refactor and add in our pet shop functions: GetAllProducts, GetProduct, AddProduct, UpdateProduct, DeleteProduct, GetInStock, GetOutOfStock, GetInventoryValue, ... As well as start looking at the Data level and Interfaces.
-    1. Lets start at the data level and work our way up.
-        1. Create an ILocalStorage Interface and LocalStorage Class in the Data directory.
+1. Visual UI <- Interface ->  Storage
+    1. it's time to refactor and start adding in all our pet shop functionality.
+
+1. Lets fix IProduct and Product First.
+    1. Create the IProduct Class and IProductLogic Interface in the Data directory
+        ```
+        public interface IProduct
+        {
+            public Int32 Id { get; set; }
+            public Boolean isSelected { get; set; }
+
+            public String Brand { get; set; } 
+            public String Name { get; set; } 
+            public String Description { get; set; } 
+            public Decimal Price { get; set; }
+            public Int32 Quantity { get; set; }
+        }
+        ```
+    1. Refactor everything to use IProduct instead of Product.
+         1. Keep in mind you can NOT deserialize an interface, so you'll need to use the concrete class and then convert it.
             ```
-                ... 
+            var products = JsonSerializer.Deserialize<Dictionary<Int32, Product>>(contents);
+            if (products == null) return empty;
+            Dictionary<Int32, IProduct> iProducts = products.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as IProduct);
+            return iProducts ?? empty;
             ```
-        1. Now Implement the LocalStorage Class
+         1. Test it.
+1. Now lets fix the foundation of ILocalStorage and Storage Classes ... later these will be refactored into SQL.
+    1. Create an ILocalStorage Interface and LocalStorage Class in the Data directory, and Implement the LocalStorage Class by moving the storage functionality from Inventory.razor to LocalStorage.
+        1. LocalStorage "restriction that a setting name length may be 255 characters at the most. Each setting can be up to 8K bytes in size, and each composite setting can be up to 64 K bytes in size."
+        1. We should probably just go ahead and use file storage instead.  
         1. Keep in mind you can NOT deserialize an interface, so you'll need to use the concrete class in the dictionary and then convert it as needed.
             ```
-                ...
+            public class LocalStorage : ILocalStorage
+            {
+                public async Task<Boolean> ClearStorage()
+                {
+                    var path = Path.Combine(FileSystem.AppDataDirectory, "products.json");
+                    File.Delete(path);
+                    return !File.Exists(path);
+                }
+
+                public async Task<Boolean> SaveProducts(Dictionary<Int32, IProduct> products)
+                {
+                    var contents = JsonSerializer.Serialize(products);
+                    String? results;
+                    var path = Path.Combine(FileSystem.AppDataDirectory, "products.json");
+                    await File.WriteAllTextAsync(path, contents);
+                    results = await File.ReadAllTextAsync(path);
+                    return results == contents;
+                }
+
+                public async Task<Dictionary<Int32, IProduct>> LoadProducts()
+                {
+                    var empty = new Dictionary<Int32, IProduct>();
+                    var path = Path.Combine(FileSystem.AppDataDirectory, "products.json");
+                    var exists = File.Exists(path);
+                    if (!exists) return empty;
+                    var contents = await File.ReadAllTextAsync(path);
+                    if (String.IsNullOrEmpty(contents)) return empty;
+                    var products = JsonSerializer.Deserialize<Dictionary<Int32, Product>>(contents);
+                    if (products == null) return empty;
+                    Dictionary<Int32, IProduct> iProducts = products.ToDictionary(kvp => kvp.Key, kvp => kvp.Value as IProduct);
+                    return iProducts ?? empty;
+                }
+            }
             ```
-        1. If you try to deserialize an interface in ISecureStorage in the LocalStorage Class, you'll get a crash in the background that will lock up your app with little indication of what went wrong.  
-        1. Once you have LocalStorage and ILocalStorage implemented, lets wire those into the front end for testing.
-        1. We'll need to add a constructor ... 
+        1. Make sure everything compiles ... it'll be a bit hard to test now, but at least make sure it compiles.  If you are ambitious, this might be a good time to write a test project to test the foundation storage classes. 
+        1. Once you have LocalStorage and ILocalStorage implemented, lets wire those into the front end for testing with the GUI.  Note: You may want to disable the auto-load feature in OninitializedAsync() for now until you have the storage classes working correctly and throughly tested.
+            1. **Clear Storage** - delete storage so we can start fresh and/or recover from errors.
+            1. **Add Product** - add a product to storage.
+            1. **Save Products** - save the products to storage.
+            1. **Load Products** - load the products from storage.  
+                1. If the database is empty, load the `TestIProducts.GetTestProducts()` instead.  You can just grab that from the respository to save time.
+            1. **Delete Products** - delete selected products from storage.
+            1. Update is just save after we modify something on the page
+        1. We'll need to add initialization code to the Inventory Component to load the required classes. `LocalStorage _localStorage = new LocalStorage();`
+        1. The Inventory Component is just a view or subset of the greater problem.  So we need to keep track of the veiw locally in the component, then send the changes as needed to the logic or storage class.  Start thinking modularly and separately in terms of the larger problem.
+        1. As an example Add Product locally to the view, then Save to send the changes to the storage class. Right now we're Ommiting the Logic Class.  But Later once we add the Logic Class this will be:
+            ```
+            private void AddProduct()
+            {
+                var Id = _products.Count > 0 ?  _products.Keys.Max() + 1 : 1;
+                newProduct.Id = Id;
+                _products.Add(Id, newProduct);
+                var results = _products.TryGetValue(Id, out IProduct product);
+                newProduct = new Product();
+            }
 
+            private async Task SaveProducts()
+            {
+                var results = await _localStorage.SaveProducts(_products);
+            }
+            ```
+        1. Now implement and test the rest of the initial methods: ClearStorage, AddProduct, SaveProducts, LoadProducts, DeleteProducts.
+        1. Once that's running and tested, make sure the OnInitializedAsync() is working correctly and loading the products from storage correctly as well.
+        1. Then double check that you removed all storage code from the Inventory Component and are using the LocalStorage Class instead.  If there is any old code left that accessed storage directly, it should be removed, as it will cause problems later.
+
+### Part 4
+
+1. Implement ProductLogic and IProductLogic Classes in the Logic directory
+    1. Notes
+        1. This should be very similar to the Product Logic class you already made for the petshop.  But it should be refactored to use IProduct instead of Product, and we'll want to use the LocalStorage class as well for permanent storage. The ProductLogic Class should be the only class that has access to the LocalStorage Class.  The Inventory Component should only have access to the ProductLogic Class.
+       1. Assume we want to always keep everything saved and synced with the Storage Class, as opposed to caching.  
+       1. Assume the storage class has thousands of records, while the logic class works on hundreds, and the visual gui only displays 10s.
+    1. Lets start with the IProductLogic Interface.  Note: An Async Method is a Task.
+        ```
+            ...  Insert Interface Here
+        ```
+    2. Then start the ProductLogic Class and set contructors for the storage class
+        ```
+        public class ProductLogic : IProductLogic
+        {
+            private ILocalStorage _localStorage;
+
+            public ProductLogic()
+            {
+                _localStorage = new LocalStorage();
+            } 
+        ```
+    1. Add the GetAllProducts so we can test an initial LoadProducts().
+        ```
+        public async Task<Dictionary<Int32, IProduct>> GetAllProducts()
+        {
+            _products = await _localStorage.LoadProducts();
+            return _products;
+        }
+        ```
+    1. Notes: 
+        1. Trying to async load the products in the synchronous constructor does not go well. 
+        1. Contruct it, and then call GetAllProducts() to load the products before using the class, knowing that if we use it first, things won't go well.
+        1. Logically this is what we were doing before anyway, so lets just do this again.
+    
+     1. Add GetAllProducts to the Inventory Component Initialization.   Follow OnInitializedAsync() which in turn calls LoadProducts(), modify the LoadProducts(), and test it.
+        1. This is just updating one line of code.
+        ```
+        private async Task LoadProducts()
+        {
+            Debug.WriteLine("Attempting to Load Local Storage");
+            _products = await _productLogic.GetAllProducts();       // <--- **** Here ****
+            Debug.WriteLine($"LoadProducts: {_products.Count}");
+            if (_products == null || _products.Count <= 0)
+            {
+                _products = TestIProducts.GetTestProducts();
+                Debug.WriteLine($"GetTestProducts: {_products.Count}");
+            }
+        }
+        ```
+        1. Loading should have worked, even if everything else is in a bit of flux.
+     1. Now lets finish up the Primary Functions:   ClearStorage(), AddProduct(), SaveProducts(), DeleteProducts(), ... 
+        1. ClearStorage() is pretty straigt forward
+            ```
+            private async Task ClearStorage()
+            {
+                Debug.WriteLine("Attempting to Clear LocalStorage");
+                _products.Clear();
+                var results = await _productLogic.ClearStorage();
+                Debug.WriteLine($"Results: {results}");
+            }
+            ```
+            ```
+            public async Task<Boolean> ClearStorage()
+            {
+                return await _localStorage.ClearStorage();
+            }
+            ```
+            ```
+            public async Task<Boolean> ClearStorage()
+            {
+                var path = Path.Combine(FileSystem.AppDataDirectory, "products.json");
+                File.Delete(path);
+                return !File.Exists(path);
+            }
+            ```
+        1. AddProduct() however, is a bit trickier.  If we don't always load all products, we don't have any way to know what the key Id should be.  So we either have to load everything ... or let ProductLogic deal with it.  Time to pass the buck.
+            1. Update Inventory for passing the buck to ProductLogic
+                ```
+                private void AddProduct()
+                {        
+                    var newId = _productLogic.AddProduct(newProduct);
+                    if (newId > 0)
+                    {
+                        _products.Add(newId, newProduct);
+                        newProduct = new Product();
+                    }
+                }
+                ```
+            1. Then we have the same problem in ProductLogic, We don't know what the key should be.  (There's a reason we use databases later.)
+                ```
+                public async Task<Int32> AddProduct(IProduct product)
+                {
+                    var result = await _localStorage.AddProduct(product);
+                    return result;
+                }
+                ```
+            1. Now we need to append an AddProduct to ILocalStorage and LocalStorage
+                1. This is ugly, but that's what happens when you don't have a database.
+                ```
+                public async Task<Int32> AddProduct(IProduct product)
+                {
+                    var products = await LoadProducts();
+                    var id = products.Count > 0 ? products.Keys.Max() + 1 : 1;
+                    product.Id = id;
+                    products.Add(id, product);
+                    var result = await SaveProducts(products);
+                    return result ? id : 0;
+                }
+                ```
+            1. Test it.
+         1. SaveProducts() aka: AddUpdateProducts() 
+            1. this will be AddUpdateProducts.  Whatever we pass it will either be added or updated. I'm assuming a long list and that we really don't want to do a series of expensive read/write of the whole file.  This is again something that needs to be handled at the Storage level.  So we'll have to pass it along.
+                ```
+                private async Task SaveProducts()
+                {
+                    Debug.WriteLine("Attempting to Save Local Storage");
+                    var results = await _productLogic.AddUpdateProducts(_products);
+                    Debug.WriteLine($"SaveProducts: {results}");
+                }
+                ```
+                ```
+                public async Task<Int32> AddUpdateProducts(Dictionary<Int32, IProduct> products)
+                {
+                    var result = await _localStorage.AddUpdateProducts(products);
+                    return result;
+                }
+                ```
+                ```
+                public async Task<Int32> AddUpdateProducts(Dictionary<Int32, IProduct> moreProducts)
+                {
+                    var products = await LoadProducts();
+                    foreach (var kvp in moreProducts)
+                        if (products.ContainsKey(kvp.Key)) products[kvp.Key] = kvp.Value;
+                        else products.Add(kvp.Key, kvp.Value);
+                    var result = await SaveProducts(products);
+                    return result;
+                }
+                ```
+         1. DeleteProducts()
+            1. remember we want everything to stay updated and synced when we press the various buttons like delete.  Before we were just deleting them from the GUI and calling it good.  Now we have to propogate that to ProductLogic and Storage.
+                ```
+                private async Task DeleteProducts()
+                {
+                    Debug.WriteLine("Attempting to Delete Products");
+                    var keysToDelete = _products.Where(p => p.Value.isSelected).Select(p => p.Key).ToList();
+                    keysToDelete.ForEach(key => _products.Remove(key));
+                    var results = await _productLogic.DeleteProducts(keysToDelete);
+                    Debug.WriteLine($"DeleteProducts: {results}");
+                }
+                ```
+                ```
+                public async Task<Int32> DeleteProducts(List<Int32> keysToDelete)
+                {
+                    var results = await _localStorage.DeleteProducts(keysToDelete);
+                    return results;
+                }
+                ```
+                ```
+                // return the number of products deleted or -result 
+                public async Task<Int32> DeleteProducts(List<Int32> keysToDelete)
+                {
+                    var products = await LoadProducts();
+                    var startCount = products.Count;
+                    foreach (var key in keysToDelete)
+                        if (products.ContainsKey(key)) products.Remove(key);
+                    var result = startCount - await SaveProducts(products);
+                    return result == keysToDelete.Count ? result : - result;
+                }
+                ```
+        1. Lots of Testing ... and then some more testing.
+    1. Now lets wire in the three logic functions: GetInStockProducts(), GetOutOfStockProducts(), GetTotalValueOfStock();
+        1. This should be fairly easy, it's just pure logic going into the place logic belongs.  No more refactoring thank goodness.
+        ```
+        private async Task ShowInStock()
+        {
+            Debug.WriteLine("Attempting to Show In-Stock");
+            _products = await _productLogic.GetInStockProducts();
+            Debug.WriteLine($"ShowInStock: {_products.Count}");
+        }
+
+        private async Task ShowOutOfStock()
+        {
+            Debug.WriteLine("Attempting to Show Out-of-Stock");
+            _products = await _productLogic.GetOutOfStockProducts();
+            Debug.WriteLine($"ShowOutOfStock: {_products.Count}");
+        }
+
+        private async Task InventoryValue()
+        {
+            Debug.WriteLine("Attempting to Calculate Inventory Value");
+            var results = await _productLogic.GetTotalValueOfStock();
+            if (App.Current?.MainPage != null ) await App.Current.MainPage.DisplayAlert("Inventory Value", $"Total Value of Stock: {results:C}", "OK");
+            Debug.WriteLine($"InventoryValue: {results}");
+        }
+        ```
+        ```
+        public async Task<Dictionary<Int32, IProduct>> GetInStockProducts()
+        {
+            var data = await GetAllProducts();
+            var results =  data.Where(p => p.Value.Quantity > 0).ToDictionary(p => p.Key, p => p.Value);
+            return results;
+        }
+
+        public async Task<Dictionary<Int32, IProduct>> GetOutOfStockProducts()
+        {
+            var data =  await GetAllProducts();
+            var results = data.Where(p => p.Value.Quantity <= 0).ToDictionary(p => p.Key, p => p.Value);
+            return results;
+        }
+
+        public async Task<Decimal> GetTotalValueOfStock()
+        {
+            var data = await GetAllProducts();
+            var results = data.Sum(p => (p.Value.Quantity >= 0 ? p.Value.Quantity : 0 ) * p.Value.Price );
+            return results;
+        }
+        ```
+    1. Now lets clean up those names and make them more relevant to all the new changes.  Maybe reorder them too.
+    1. Then it looks like we need to clear the selectd bit when we load and press the various buttons. 
+        ```
+        private void ClearSelection ()
+        {
+            _products.Keys.ToList().ForEach(key => _products[key].isSelected = false);
+        }
+        ```
+	1.  More Testing
+    1.  And Done with Part 4.   I'm out of time, so we'll add Get by ID next time.
+         
 ### To Be Continued ...
-        
-1. To Be Continued ...
-    1. Create the IProduct Class and IProductLogic Interface in the Data directory
-    1. Implement ProductLogic Class in the Logic directory
-    1. Now we should have a working Product Logic Class, but we need to wire it up to the Inventory Component.  Make sure you've implemented IProduct, IProductLogic, ProductLogic, ILocalStorage, and LocalStorage correctly.
-    1. Check that `Product : IProduct` and `ProductLogic : IProductLogic` are implemented correctly.  I forgot to update one. oops.
-	1. Let refactor Inventory.razor to use the ProductLogic Class.
-		1. Keep in mind there is a bit of a disconnect between the component and the logic.  When we make changes, we need to make sure both the component and the logic are updated.  
-        1. I commented out the extra hierarchy fields, so the refactoring will need to account for that.
-        1. Update all the Product references to use IProduct instead.  
-        1. I'm setting the SortedDictionary back to a regular Dictionary for now.  We can add sorting back in later.  Keep it Simple First.
-        1. In refactoring and working through the logic, I realize we need an AddProducts() plural, not just singular.  Why?  Because I want to init the database with test data and I don't want to (add 1, write) x 10,000.  I want to (add 10,000, write) once.  So I'm going to add that in now.  It may only ever get used in the init but still it's probably a good idea to write it and add it to the Interface(s).
-            1. AddProducts (plural) needs to decide if we will allow over-writing of keys.  If yes, then we can use it as an update function as well.  ~~If no, then we need to check for existing keys and throw an error if we try to add a duplicate key.~~  I'm going to allow over-writing and updating of keys for now. 
-            1. Lets go ahead and use the IDE to reneame AddProducts plural to AddUpdateProdcuts.  This will make it more clear what it does.
-        1. We'll need to add a constructor to the Inventory Component to inject the ProductLogic Class. ??? cjm ???
-			```
-			private readonly IProductLogic _productLogic;
-			public Inventory(IProductLogic productLogic)
-			{
-				_productLogic = productLogic;
-			}
-			```
-
----
-
-
 
  
 1. ... 
@@ -273,6 +555,13 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 &nbsp;
 
 ### Project Blog:
+
+#### 2024/08/27
+- This is much harder that it appears, trying to explain do it, explain it, and document it.  Trying to figure out what needs to be said when.
+- Almost done with Part 4.   Part 4 because I decided to split Part 3 into two parts.
+
+#### 2024/08/26
+- In the middle of Part 3
 
 #### 2024/09/25
 - Began work on Part 2 

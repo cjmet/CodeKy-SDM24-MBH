@@ -7,16 +7,16 @@
 
 <h3>Inventory (@_products.Count)</h3>
 
-<button @onclick="ClearStorage">Clear Storage</button>
-<button @onclick="LoadProducts">Load Products</button>
-<button @onclick="SaveProducts">Save Products</button>
-<button @onclick="DeleteProducts">Delete Products</button>
+
+<button @onclick="LoadProducts">Load All Products</button>
+<button @onclick="SaveProducts">Update Products</button>
+<button @onclick="DeleteProducts">Delete Selected Products</button>
+<button @onclick="ClearStorage">Clear ALL Data</button>
+
 <label class="spacer"> &emsp; </label>
-<button @onclick="NIA">Show All</button>
-<button @onclick="NIA">Show In-Stock</button>
-<button @onclick="NIA">Show Out-of-Stock</button>
-<button @onclick="NIA">Inventory Value</button>
-<button @onclick="NIA">Search</button>
+<button @onclick="ShowInStock">Show In-Stock</button>
+<button @onclick="ShowOutOfStock">Show Out-of-Stock</button>
+<button @onclick="InventoryValue">Inventory Value</button>
 <br>
 
 @{
@@ -33,6 +33,7 @@
         <li>
             <input type="checkbox" @bind="product.Value.isSelected" />
             <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
+            <input @bind="product.Value.Brand" />
             <input @bind="product.Value.Name" />
             <input @bind="product.Value.Description" style="width: 30em;" />
             <label> &nbsp Qty:</label><input @bind="product.Value.Quantity" type="number" style="width: 4em; text-align: right;" />
@@ -41,13 +42,13 @@
     }
 </ul>
 
+<input placeholder="Brand" @bind="newProduct.Brand" />
 <input placeholder="Name" @bind="newProduct.Name" />
 <input placeholder="Description" @bind="newProduct.Description" />
 <input placeholder="Price" @bind="newProduct.Price" />
 <input placeholder="Quantity" @bind="newProduct.Quantity" />
 
-<button @onclick="NIA">Add Product</button>
-
+<button @onclick="AddProduct">Add Product</button>
 
 
 
@@ -60,113 +61,104 @@
         }
        };
     private IProduct newProduct = new Product();
-
+    private IProductLogic _productLogic = new ProductLogic();
 
 
     // Methods
 
 
-
-    private async Task NIA()
+    protected override async Task OnInitializedAsync()
     {
-        await App.Current.MainPage.DisplayAlert("NIA", "Not Implemented Yet", "OK");
+        await base.OnInitializedAsync();
+        await LoadProducts();
     }
 
-    private async Task Alert(string message)
+    // private async void should only be used for event handlers.
+    // private async Task should be used for all other methods.
+    private async void NIA()
     {
-        await App.Current.MainPage.DisplayAlert("Message", message, "OK");
+        if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("NIA", "Not Implemented Yet", "OK");
     }
 
-    private void ClearStorage()
+    private async Task ClearStorage()
     {
-        Debug.WriteLine("Attempting to Clear LocalStorage");
-        var _localStorage = new LocalStorage();
-        _localStorage.ClearStorage();
-        Debug.WriteLine("LocalStorage Cleared");
-    }
-
-    private void AddProduct()
-    {
-        var Id = _products.Keys.Max() + 1;
-        newProduct.Id = Id;
-        _products.Add(Id, newProduct);
-        newProduct = new Product();
-    }
-
-    private async Task SaveProducts()
-    {
-        Debug.WriteLine("Attempting to Save Local Storage");
-        var _localStorage = new LocalStorage();
-        var results = await _localStorage.SaveProducts(_products);
-        Debug.WriteLine($"SaveProducts: {results}");
+        Debug.WriteLine("Attempting to Clear Storage");
+        _products.Clear();
+        var results = await _productLogic.ClearStorage();
+        Debug.WriteLine($"Results: {results}");
     }
 
     private async Task LoadProducts()
     {
-        Debug.WriteLine("Attempting to Load Local Storage");
-        var _localStorage = new LocalStorage();
-        _products = await _localStorage.LoadProducts();
+        Debug.WriteLine("Attempting to Load Products");
+        _products = await _productLogic.GetAllProducts();
         Debug.WriteLine($"LoadProducts: {_products.Count}");
         if (_products == null || _products.Count <= 0)
         {
-            _products = InitTestProducts();
-            Debug.WriteLine($"InitProducts: {_products.Count}");
+            _products = TestIProducts.GetTestProducts();
+            Debug.WriteLine($"GetTestProducts: {_products.Count}");
         }
+        ClearSelection();
     }
 
-    private void DeleteProducts()
-    {
-        _products.Where(p => p.Value.isSelected).ToList().ForEach(p => _products.Remove(p.Key));
+    private async Task AddProduct()
+    {        
+        Debug.WriteLine("Attempting to Add Product");
+        var newId = await _productLogic.AddProduct(newProduct);
+        if (newId > 0)
+        {
+            _products.Add(newId, newProduct);
+            newProduct = new Product();
+        }
+        Debug.WriteLine($"AddProduct: {newId}");
+        ClearSelection();
     }
 
-    protected override async Task OnInitializedAsync()
+    private async Task SaveProducts()
     {
-        await base.OnInitializedAsync();
-        return;
-
-        // Debug.WriteLine("OnInitializedAsync");
-
-        // Debug.WriteLine("Attempting to Load ProductLogic");
-        // var _productLogic = new ProductLogic();
-        // Debug.WriteLine("Attempting to GetAllProducts");
-
-        // _products = _productLogic.GetAllProducts();
-        // Debug.WriteLine($"OnInitializedAsync: _products.Count = {_products.Count}");
-        // if (_products == null || _products.Count <= 0)
-        // {
-        //     Debug.WriteLine("OnInitializedAsync: Initializing Products");
-        //     _products = InitTestProducts();
-        //     Debug.WriteLine($"OnInitializedAsync: _products.Count = {_products.Count}");
-        //     Int32 result=0;
-        //     // result = _productLogic.AddUpdateProducts(_products);
-        //     Debug.WriteLine($"OnInitializedAsync: result = {result}");
-        //     if (result <= 0)
-        //     {
-        //         Debug.WriteLine("OnInitializedAsync: FAILED: Initializing Products Failed.");
-        //     }
-        // }
-
+        Debug.WriteLine("Attempting to Save Products");
+        var results = await _productLogic.AddUpdateProducts(_products);
+        Debug.WriteLine($"SaveProducts: {results}");
+        ClearSelection();
     }
 
-
-
-    // ...
-
-
-
-    protected private Dictionary<int, IProduct> InitTestProducts()
+    private async Task DeleteProducts()
     {
-        return new Dictionary<int, IProduct>
-    {
-        { 1, new Product { Id = 1, Name = "Purina Cat Chow", Description = "Complete and Balanced Cat Food", Price = 15.99m, Quantity = 100 } },
-        { 2, new Product { Id = 2, Name = "Meow Mix", Description = "Complete and Balanced Cat Food", Price = 12.99m, Quantity = 0 } },
-        { 3, new Product { Id = 3, Name = "Iams", Description = "Complete and Balanced Cat Food", Price = 17.99m, Quantity = 62 } },
-        { 4, new Product { Id = 4, Name = "Hills Science Diet", Description = "Complete and Balanced Cat Food", Price = 19.99m, Quantity = 0 } },
-      
-        { 9, new Product { Id = 9, Name = "Woof Mix", Description = "Complete and Balanced Dog Food", Price = 12.99m, Quantity = -1 } },
-        { 10, new Product { Id = 10, Name = "Iams", Description = "Complete and Balanced Dog Food", Price = 17.99m, Quantity = 11 } },
-        { 11, new Product { Id = 11, Name = "Hills Science Diet", Description = "Complete and Balanced Dog Food", Price = 19.99m, Quantity = 0 } },
-        { 15, new Product { Id = 15, Name = "Purina Dog Chow", Description = "Complete and Balanced Dog Food", Price = 15.99m, Quantity = 456 } }
-    };
+        Debug.WriteLine("Attempting to Delete Products");
+        var keysToDelete = _products.Where(p => p.Value.isSelected).Select(p => p.Key).ToList();
+        keysToDelete.ForEach(key => _products.Remove(key));
+        var results = await _productLogic.DeleteProducts(keysToDelete);
+        Debug.WriteLine($"DeleteProducts: {results}");
+        ClearSelection();
     }
+
+    private async Task ShowInStock()
+    {
+        Debug.WriteLine("Attempting to Show In-Stock");
+        _products = await _productLogic.GetInStockProducts();
+        Debug.WriteLine($"ShowInStock: {_products.Count}");
+        ClearSelection();
+    }
+
+    private async Task ShowOutOfStock()
+    {
+        Debug.WriteLine("Attempting to Show Out-of-Stock");
+        _products = await _productLogic.GetOutOfStockProducts();
+        Debug.WriteLine($"ShowOutOfStock: {_products.Count}");
+        ClearSelection();
+    }
+
+    private async Task InventoryValue()
+    {
+        Debug.WriteLine("Attempting to Calculate Inventory Value");
+        var results = await _productLogic.GetTotalValueOfStock();
+        if (App.Current?.MainPage != null ) await App.Current.MainPage.DisplayAlert("Inventory Value", $"Total Value of Stock: {results:C}", "OK");
+        Debug.WriteLine($"InventoryValue: {results}");
+    }
+
+    private void ClearSelection ()
+    {
+        _products.Keys.ToList().ForEach(key => _products[key].isSelected = false);
+    }
+
 }

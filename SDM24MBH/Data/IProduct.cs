@@ -13,4 +13,5 @@ namespace SDM24MBH.Data
         public Decimal Price { get; set; }
         public Int32 Quantity { get; set; }
     }
+ 
 }
