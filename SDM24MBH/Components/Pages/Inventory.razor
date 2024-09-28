@@ -17,19 +17,27 @@
 <button @onclick="ShowInStock">Show In-Stock</button>
 <button @onclick="ShowOutOfStock">Show Out-of-Stock</button>
 <button @onclick="InventoryValue">Inventory Value</button>
+
+<br>
+
+<label style="width:0.8em;"/>
+<input @bind="filterProduct.Id" style="width:2em; text-align: right;"></input>
+<input @bind="filterProduct.Brand"/>
+<input @bind="filterProduct.Name" />
+<input @bind="filterProduct.Description" style="width: 30em;" />
+<button @onclick="FilterProducts">Filter</button>
 <br>
 
 @{
     counter = 0;
+    pages = _products.Count / 10;
+    if (page > pages) page = pages;
+    if (page < 0) page = 0;
 }
 <ul class="list-unstyled">
-    @foreach (var product in _products)
+     @for (int i = page * 10; i < (page + 1) * 10 && i < _products.Count; i++) 
     {
-        if (++counter > 10)
-        {
-            @("Too many products to display!")
-            break;
-        }
+        var product = _products.ElementAt(i);
         <li>
             <input type="checkbox" @bind="product.Value.isSelected" />
             <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
@@ -41,6 +49,12 @@
         </li>
     }
 </ul>
+
+<button @onclick="PageLeft">PageLeft</button>
+<label>[Page: @(page+1) of @(pages+1) ]</label>
+<button @onclick="PageRight">PageRight</button>
+<br />
+<br />
 
 <input placeholder="Brand" @bind="newProduct.Brand" />
 <input placeholder="Name" @bind="newProduct.Name" />
@@ -55,12 +69,15 @@
 @code {
     // Variables
     private Int32 counter = 0;
+    private Int32 page = 0;
+    private Int32 pages = 0;
     private Dictionary<int, IProduct> _products = new Dictionary<int, IProduct>
        {
         { 1, new Product { Id = 1, Name = "Products should be loading", Description = "from Local Storage?",}
         }
        };
     private IProduct newProduct = new Product();
+    private IProduct filterProduct = new Product();
     private IProductLogic _productLogic = new ProductLogic();
 
 
@@ -102,7 +119,7 @@
     }
 
     private async Task AddProduct()
-    {        
+    {
         Debug.WriteLine("Attempting to Add Product");
         var newId = await _productLogic.AddProduct(newProduct);
         if (newId > 0)
@@ -152,13 +169,42 @@
     {
         Debug.WriteLine("Attempting to Calculate Inventory Value");
         var results = await _productLogic.GetTotalValueOfStock();
-        if (App.Current?.MainPage != null ) await App.Current.MainPage.DisplayAlert("Inventory Value", $"Total Value of Stock: {results:C}", "OK");
+        if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Inventory Value", $"Total Value of Stock: {results:C}", "OK");
         Debug.WriteLine($"InventoryValue: {results}");
     }
 
-    private void ClearSelection ()
+    private void ClearSelection()
     {
         _products.Keys.ToList().ForEach(key => _products[key].isSelected = false);
+        page = 0;
+    }
+
+    private async Task FilterProducts ()     {
+        Debug.WriteLine("Attempting to Filter Products");
+        if (filterProduct.Id > 0) _products = _products.Where(p => p.Key == filterProduct.Id).ToDictionary(p => p.Key, p => p.Value);
+        if (!string.IsNullOrEmpty(filterProduct.Brand)) _products = _products.Where(p => p.Value.Brand.Contains(filterProduct.Brand, StringComparison.OrdinalIgnoreCase)).ToDictionary(p => p.Key, p => p.Value);
+        if (!string.IsNullOrEmpty(filterProduct.Name)) _products = _products.Where(p => p.Value.Name.Contains(filterProduct.Name, StringComparison.OrdinalIgnoreCase)).ToDictionary(p => p.Key, p => p.Value);
+        if (!string.IsNullOrEmpty(filterProduct.Description)) _products = _products.Where(p => p.Value.Description.Contains(filterProduct.Description, StringComparison.OrdinalIgnoreCase)).ToDictionary(p => p.Key, p => p.Value);
+        Debug.WriteLine($"FilterProducts: {_products.Count}");
+        ClearSelection();
+    }
+
+    private async Task PageLeft()
+    {
+        Debug.WriteLine("Attempting to Page Left");
+        var tmp = --page;
+        ClearSelection();
+        page = tmp;
+        Debug.WriteLine($"PageLeft: {page}");
+    }
+
+    private async Task PageRight()
+    {
+        Debug.WriteLine("Attempting to Page Right");
+        var tmp = ++page;
+        ClearSelection();
+        page = tmp;
+        Debug.WriteLine($"PageRight: {page}");
     }
 
 }

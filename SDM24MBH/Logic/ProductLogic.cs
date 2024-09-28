@@ -65,8 +65,6 @@ namespace SDM24MBH.Logic
             var results = data.Sum(p => (p.Value.Quantity >= 0 ? p.Value.Quantity : 0 ) * p.Value.Price );
             return results;
         }
-
-
     }
 
 }
