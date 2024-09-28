@@ -534,7 +534,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
         ```
 	1.  More Testing
     1.  And Done with Part 4.   I'm out of time, so we'll add Get by ID next time.
-         
+    ![Screenshot02](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot02.png?raw=true)     
 ### To Be Continued ...
 
  
