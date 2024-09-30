@@ -537,6 +537,16 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
     ![Screenshot02](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot02.png?raw=true)     
 ### To Be Continued ...
 
+### Part 5
+- Implemented Entity Framework Core (Single Table) and SQLite 
+- I think I have lost the battle of documentation at this point.
+- I'm going to have to finish the project, then backtrack and redo it in as simplified a form as possible and document that.
+- Documenting it and figuring out how much to document is a real challenge.
+- The Documentation alone, if given enough detail, could take a day for each hour of coding.  I'm struggling finding the right balance here.
+
+### Part 6
+- ... 
+
  
 1. ... 
 
