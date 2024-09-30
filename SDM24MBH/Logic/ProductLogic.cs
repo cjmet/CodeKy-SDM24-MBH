@@ -9,10 +9,10 @@ namespace SDM24MBH.Logic
     {
         private ILocalStorage _localStorage;
 
-        public ProductLogic()
+        public ProductLogic(ILocalStorage localStorageDI)
         {
             Debug.WriteLine($"Initializing ProductLogic");
-            _localStorage = new LocalStorage();
+            _localStorage = localStorageDI;
             return;
         }
 

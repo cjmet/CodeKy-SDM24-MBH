@@ -11,7 +11,7 @@ namespace SDM24MBH.Data
         {
             var path = Path.Combine(FileSystem.AppDataDirectory, "products.json");
             File.Delete(path);
-            return !File.Exists(path);
+            return await Task.FromResult(!File.Exists(path));
         }
 
         public async Task<Int32> SaveProducts(Dictionary<Int32, IProduct> products)

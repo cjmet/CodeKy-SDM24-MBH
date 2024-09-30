@@ -61,7 +61,7 @@
 
         // ParallelForEachAsync():  // Async requires an async type ... Otherwise it DOES Fault and Throw;
         todos.RemoveAll(todo => todo.IsDone);
-
+        await Task.CompletedTask;
         // await this.Save();
     }
 
@@ -70,7 +70,7 @@
         var contents = JsonSerializer.Serialize(todos);
         if (useLocalStorage) {
             await LocalStorage.SetAsync("todos", contents);
-            await App.Current.MainPage.DisplayAlert("Saved", $"Saved to Local Storage", "OK");
+            if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Saved", $"Saved to Local Storage", "OK");
         }
 
         else
@@ -78,7 +78,7 @@
 
             var path = Path.Combine(FileSystem.AppDataDirectory, "todos.json");
             await File.WriteAllTextAsync(path, contents);
-            await App.Current.MainPage.DisplayAlert("Saved", $"List has been saved to:\n\t{path}", "OK");
+            if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Saved", $"List has been saved to:\n\t{path}", "OK");
         }
     }
 
@@ -89,27 +89,27 @@
             var data = await LocalStorage.GetAsync("todos");
             if (data == null)
             {
-                await App.Current.MainPage.DisplayAlert("Warning", "No data found", "OK");
+                if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Warning", "No data found", "OK");
                 return;
             }
             var loadedTodos = JsonSerializer.Deserialize<List<TodoItem>>(data);
             todos.Clear();
-            todos.AddRange(loadedTodos);
-            await App.Current.MainPage.DisplayAlert("Loaded", $"Loaded from Local Storage", "OK");
+            if (loadedTodos != null) todos.AddRange(loadedTodos);
+            if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Loaded", $"Loaded from Local Storage", "OK");
         }
         else
         {
             var path = Path.Combine(FileSystem.AppDataDirectory, "todos.json");
             if (!File.Exists(path))
             {
-                await App.Current.MainPage.DisplayAlert("Warning", $"File not found:\n\t{path}", "OK");
+                if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Warning", $"File not found:\n\t{path}", "OK");
                 return;
             }
             var contents = await File.ReadAllTextAsync(path);
             var loadedTodos = JsonSerializer.Deserialize<List<TodoItem>>(contents);
             todos.Clear();
-            todos.AddRange(loadedTodos);
-            await App.Current.MainPage.DisplayAlert("Loaded", $"Loaded from:\n\t{path}", "OK");
+            if (loadedTodos != null) todos.AddRange(loadedTodos);
+            if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Loaded", $"Loaded from:\n\t{path}", "OK");
         }
     }
 }

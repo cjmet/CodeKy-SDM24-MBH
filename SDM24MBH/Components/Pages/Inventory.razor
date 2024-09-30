@@ -33,8 +33,7 @@
 <br>
 
 @{
-    counter = 0;
-    pages = _products.Count / 10;
+    pages = (_products.Count - 1) / 10;
     if (page > pages) page = pages;
     if (page < 0) page = 0;
 }
@@ -72,8 +71,6 @@
 
 @code {
     // Variables
-    
-    private Int32 counter = 0;
     private Int32 page = 0;
     private Int32 pages = 0;
     private Dictionary<int, IProduct> _products = new Dictionary<int, IProduct>
@@ -84,11 +81,11 @@
     private IProduct newProduct = new Product();
     private IProduct filterProduct = new Product();
     // private IProductLogic _productLogic = new ProductLogic();
-    
+    private SQLiteContext _context = new SQLiteContext();
+
 
 
     // Methods
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -121,7 +118,7 @@
             _products = TestIProducts.GetTestProducts();
             Debug.WriteLine($"GetTestProducts: {_products.Count}");
         }
-        ClearSelection();
+        ClearSelectionAndPage();
     }
 
     private async Task AddProduct()
@@ -133,8 +130,8 @@
             _products.Add(newId, newProduct);
             newProduct = new Product();
         }
-        Debug.WriteLine($"AddProduct: {newId}");
-        ClearSelection();
+        Debug.WriteLine($"Added: {newId}");
+        ClearSelectionAndPage(false);
     }
 
     private async Task SaveProducts()
@@ -142,7 +139,7 @@
         Debug.WriteLine("Attempting to Save Products");
         var results = await _productLogic.AddUpdateProducts(_products);
         Debug.WriteLine($"SaveProducts: {results}");
-        ClearSelection();
+        ClearSelectionAndPage();
     }
 
     private async Task DeleteProducts()
@@ -152,7 +149,7 @@
         keysToDelete.ForEach(key => _products.Remove(key));
         var results = await _productLogic.DeleteProducts(keysToDelete);
         Debug.WriteLine($"DeleteProducts: {results}");
-        ClearSelection();
+        ClearSelectionAndPage(false);
     }
 
     private async Task ShowInStock()
@@ -160,7 +157,7 @@
         Debug.WriteLine("Attempting to Show In-Stock");
         _products = await _productLogic.GetInStockProducts();
         Debug.WriteLine($"ShowInStock: {_products.Count}");
-        ClearSelection();
+        ClearSelectionAndPage();
     }
 
     private async Task ShowOutOfStock()
@@ -168,7 +165,7 @@
         Debug.WriteLine("Attempting to Show Out-of-Stock");
         _products = await _productLogic.GetOutOfStockProducts();
         Debug.WriteLine($"ShowOutOfStock: {_products.Count}");
-        ClearSelection();
+        ClearSelectionAndPage();
     }
 
     private async Task InventoryValue()
@@ -179,10 +176,11 @@
         Debug.WriteLine($"InventoryValue: {results}");
     }
 
-    private void ClearSelection()
+    // Clear Selections and Optionally Page
+    private void ClearSelectionAndPage(Boolean clearPage = true)
     {
         _products.Keys.ToList().ForEach(key => _products[key].isSelected = false);
-        page = 0;
+        if (clearPage) page = 0;
     }
 
     private async Task FilterProducts ()     {
@@ -192,25 +190,28 @@
         if (!string.IsNullOrEmpty(filterProduct.Name)) _products = _products.Where(p => p.Value.Name.Contains(filterProduct.Name, StringComparison.OrdinalIgnoreCase)).ToDictionary(p => p.Key, p => p.Value);
         if (!string.IsNullOrEmpty(filterProduct.Description)) _products = _products.Where(p => p.Value.Description.Contains(filterProduct.Description, StringComparison.OrdinalIgnoreCase)).ToDictionary(p => p.Key, p => p.Value);
         Debug.WriteLine($"FilterProducts: {_products.Count}");
-        ClearSelection();
+        ClearSelectionAndPage();
+        await Task.CompletedTask;
     }
 
     private async Task PageLeft()
     {
         Debug.WriteLine("Attempting to Page Left");
         var tmp = --page;
-        ClearSelection();
+        ClearSelectionAndPage();
         page = tmp;
         Debug.WriteLine($"PageLeft: {page}");
+        await Task.CompletedTask;
     }
 
     private async Task PageRight()
     {
         Debug.WriteLine("Attempting to Page Right");
         var tmp = ++page;
-        ClearSelection();
+        ClearSelectionAndPage();
         page = tmp;
         Debug.WriteLine($"PageRight: {page}");
+        await Task.CompletedTask;
     }
 
 }
