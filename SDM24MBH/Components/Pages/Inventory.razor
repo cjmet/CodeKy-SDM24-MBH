@@ -23,12 +23,24 @@
 
 <br>
 
-<label style="width:0.8em;"/>
+<button style="width: 3.1em;" @onclick="@(() => {sortByText = "Id";})">Id</button>
+<button style="width: 12.6em" @onclick="@(() => {sortByText = "Brand";})" >Sort By Brand</button> 
+<button style="width: 12.6em;" @onclick="@(() => {sortByText = "Name";})">Sort By Name</button>
+<button style="width: 30em;" @onclick="@(() => {sortByText = "Description";})">Sort By Description</button>
+<button style="width: 6.4em;" @onclick="@(() => {sortByText = "Quantity";})">Quantity</button>
+<button style="width: 6.4em;" @onclick="@(() => {sortByText = "Price";})">Price</button>
+
+<br>
+
+<input type="checkbox" @bind="selectAll" @onclick="SelectAll" />
 <input @bind="filterProduct.Id" style="width:2em; text-align: right;"></input>
-<input @bind="filterProduct.Brand"/>
+<input @bind="filterProduct.Brand" />
 <input @bind="filterProduct.Name" />
 <input @bind="filterProduct.Description" style="width: 30em;" />
 <button @onclick="FilterProducts">Filter</button>
+<label style="width: 2.5em"> </label>
+<button @onclick="@(() => {reverseSort = !reverseSort;})">@(reverseSort ? "Forward Sort" : "Reverse Sort")</button>
+ 
 <br>
 
 @{
@@ -37,7 +49,8 @@
     if (page < 0) page = 0;
 }
 <ul class="list-unstyled">
-     @for (int i = page * 10; i < (page + 1) * 10 && i < _products.Count; i++) 
+    @{SortByColumn(sortByText);}
+    @for (int i = page * 10; i < (page + 1) * 10 && i < _products.Count; i++)
     {
         var product = _products.ElementAt(i);
         <li>
@@ -53,7 +66,7 @@
 </ul>
 
 <button @onclick="PageLeft">PageLeft</button>
-<label>[Page: @(page+1) of @(pages+1) ]</label>
+<label>[Page: @(page + 1) of @(pages + 1) ]</label>
 <button @onclick="PageRight">PageRight</button>
 <br />
 <br />
@@ -72,6 +85,9 @@
     // Variables
     private Int32 page = 0;
     private Int32 pages = 0;
+    private Boolean selectAll = false;
+    String sortByText = "Id";
+    Boolean reverseSort = false;
     private Dictionary<int, IProduct> _products = new Dictionary<int, IProduct>
        {
         { 1, new Product { Id = 1, Name = "Products should be loading", Description = "from Local Storage?",}
@@ -183,9 +199,11 @@
     {
         _products.Keys.ToList().ForEach(key => _products[key].isSelected = false);
         if (clearPage) page = 0;
+        selectAll = false;
     }
 
-    private async Task FilterProducts ()     {
+    private async Task FilterProducts()
+    {
         Debug.WriteLine("Attempting to Filter Products");
         if (filterProduct.Id > 0) _products = _products.Where(p => p.Key == filterProduct.Id).ToDictionary(p => p.Key, p => p.Value);
         if (!string.IsNullOrEmpty(filterProduct.Brand)) _products = _products.Where(p => p.Value.Brand.Contains(filterProduct.Brand, StringComparison.OrdinalIgnoreCase)).ToDictionary(p => p.Key, p => p.Value);
@@ -214,6 +232,23 @@
         page = tmp;
         Debug.WriteLine($"PageRight: {page}");
         await Task.CompletedTask;
+    }
+
+    private async Task SelectAll()
+    {
+        Debug.WriteLine("Attempting to Select All");
+        selectAll = !selectAll;
+        for (int i = page * 10; i < (page + 1) * 10 && i < _products.Count; i++) _products.ElementAt(i).Value.isSelected = selectAll;
+        Debug.WriteLine($"SelectAll: {selectAll}");
+        await Task.CompletedTask;
+    }
+
+    private void SortByColumn(String propertyName)
+    {
+        Debug.WriteLine($"Attempting to Sort By: {propertyName}");
+        _products = _products.OrderBy(p => p.Value.GetType().GetProperty(propertyName).GetValue(p.Value, null)).ToDictionary(p => p.Key, p => p.Value);
+        if (reverseSort) _products = _products.Reverse().ToDictionary(p => p.Key, p => p.Value);
+        Debug.WriteLine($"SortBy: {propertyName}");
     }
 
 }
