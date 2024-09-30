@@ -1,9 +1,13 @@
 ﻿@page "/inventory"
+@inject IProductLogic _productLogic ;
+
 @using SDM24MBH.Data;
 @using SDM24MBH.Logic;
 @using System.Text.Json;
 @using Microsoft.Maui.Storage;
 @using System.Diagnostics;
+
+
 
 <h3>Inventory (@_products.Count)</h3>
 
@@ -68,6 +72,7 @@
 
 @code {
     // Variables
+    
     private Int32 counter = 0;
     private Int32 page = 0;
     private Int32 pages = 0;
@@ -78,7 +83,8 @@
        };
     private IProduct newProduct = new Product();
     private IProduct filterProduct = new Product();
-    private IProductLogic _productLogic = new ProductLogic();
+    // private IProductLogic _productLogic = new ProductLogic();
+    
 
 
     // Methods

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SDM24MBH.Logic;
 
 namespace SDM24MBH
 {
@@ -15,9 +16,10 @@ namespace SDM24MBH
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddSingleton<IProductLogic,ProductLogic>(); // cjm 
 
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 
