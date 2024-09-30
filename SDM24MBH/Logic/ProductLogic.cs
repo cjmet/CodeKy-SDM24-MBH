@@ -18,7 +18,7 @@ namespace SDM24MBH.Logic
 
         public async Task<Dictionary<Int32, IProduct>> GetAllProducts()
         {
-            var _products = await _localStorage.LoadProducts();
+            var _products = await _localStorage.GetAllProducts();
             return _products;
         }
 

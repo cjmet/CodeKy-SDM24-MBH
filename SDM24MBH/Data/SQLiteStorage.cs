@@ -20,9 +20,9 @@ namespace SDM24MBH.Data
         {
             if (product == null) return 0;
             var _products = _dbcontext.Products;
-            _products.Add(product as Product);
+            _products.Add((Product) product);
             var results = await _dbcontext.SaveChangesAsync();
-                    
+
             return results > 0 ? product.Id : 0;
         }
 
@@ -30,12 +30,13 @@ namespace SDM24MBH.Data
         {
             var _products = _dbcontext.Products;
             var _ids = _products.Select(p => p.Id);
-            foreach (var product in moreProducts) {
+            foreach (var product in moreProducts)
+            {
                 var updatedProduct = product.Value as Product;
                 if (_ids.Contains(product.Key))
                 {
                     Debug.WriteLine($"Updating product {product.Key}");
-                    
+
                     if (updatedProduct != null) _products.Update(updatedProduct);
                 }
                 else
@@ -61,7 +62,7 @@ namespace SDM24MBH.Data
             return _dbcontext.SaveChangesAsync();
         }
 
-        public Task<Dictionary<int, IProduct>> LoadProducts()
+        public Task<Dictionary<int, IProduct>> GetAllProducts()
         {
             Dictionary<int, IProduct> products = _dbcontext.Products.ToDictionary(p => p.Id, p => p as IProduct);
             return Task.FromResult(products);

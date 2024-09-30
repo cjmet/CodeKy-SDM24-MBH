@@ -1,6 +1,5 @@
 ﻿@page "/inventory"
-@inject IProductLogic _productLogic ;
-
+@inject IProductLogic _productLogic;
 @using SDM24MBH.Data;
 @using SDM24MBH.Logic;
 @using System.Text.Json;
@@ -80,13 +79,10 @@
        };
     private IProduct newProduct = new Product();
     private IProduct filterProduct = new Product();
-    // private IProductLogic _productLogic = new ProductLogic();
-    private SQLiteContext _context = new SQLiteContext();
 
 
 
     // Methods
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -155,6 +151,8 @@
     private async Task ShowInStock()
     {
         Debug.WriteLine("Attempting to Show In-Stock");
+        // await LoadProducts();
+        // _products = _products.Where(p => p.Value.Quantity > 0).ToDictionary(p => p.Key, p => p.Value);
         _products = await _productLogic.GetInStockProducts();
         Debug.WriteLine($"ShowInStock: {_products.Count}");
         ClearSelectionAndPage();
@@ -163,6 +161,8 @@
     private async Task ShowOutOfStock()
     {
         Debug.WriteLine("Attempting to Show Out-of-Stock");
+        // await LoadProducts();
+        // _products = _products.Where(p => p.Value.Quantity <= 0).ToDictionary(p => p.Key, p => p.Value);
         _products = await _productLogic.GetOutOfStockProducts();
         Debug.WriteLine($"ShowOutOfStock: {_products.Count}");
         ClearSelectionAndPage();
@@ -171,6 +171,8 @@
     private async Task InventoryValue()
     {
         Debug.WriteLine("Attempting to Calculate Inventory Value");
+        // await LoadProducts();
+        // var results = _products.Sum(p => p.Value.Price * (p.Value.Quantity >= 0 ? p.Value.Quantity : 0));
         var results = await _productLogic.GetTotalValueOfStock();
         if (App.Current?.MainPage != null) await App.Current.MainPage.DisplayAlert("Inventory Value", $"Total Value of Stock: {results:C}", "OK");
         Debug.WriteLine($"InventoryValue: {results}");

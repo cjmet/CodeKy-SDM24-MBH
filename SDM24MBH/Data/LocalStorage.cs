@@ -24,7 +24,7 @@ namespace SDM24MBH.Data
             return results == contents ? products.Count : -products.Count;
         }
 
-        public async Task<Dictionary<Int32, IProduct>> LoadProducts()
+        public async Task<Dictionary<Int32, IProduct>> GetAllProducts()
         {
             var empty = new Dictionary<Int32, IProduct>();
             var path = Path.Combine(FileSystem.AppDataDirectory, "products.json");
@@ -40,7 +40,7 @@ namespace SDM24MBH.Data
 
         public async Task<Int32> AddProduct(IProduct product)
         {
-            var products = await LoadProducts();
+            var products = await GetAllProducts();
             var id = products.Count > 0 ? products.Keys.Max() + 1 : 1;
             product.Id = id;
             products.Add(id, product);
@@ -50,7 +50,7 @@ namespace SDM24MBH.Data
 
         public async Task<Int32> AddUpdateProducts(Dictionary<Int32, IProduct> moreProducts)
         {
-            var products = await LoadProducts();
+            var products = await GetAllProducts();
             foreach (var kvp in moreProducts)
                 if (products.ContainsKey(kvp.Key)) products[kvp.Key] = kvp.Value;
                 else products.Add(kvp.Key, kvp.Value);
@@ -61,7 +61,7 @@ namespace SDM24MBH.Data
         // return the number of products deleted or -result 
         public async Task<Int32> DeleteProducts(List<Int32> keysToDelete)
         {
-            var products = await LoadProducts();
+            var products = await GetAllProducts();
             var startCount = products.Count;
             foreach (var key in keysToDelete)
                 if (products.ContainsKey(key)) products.Remove(key);
