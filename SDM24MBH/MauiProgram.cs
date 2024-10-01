@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MudBlazor.Services;
 using SDM24MBH.Logic;
 using SDM24MBH.Data;
 
@@ -17,6 +18,7 @@ namespace SDM24MBH
                 });
 
             builder.Services.AddMauiBlazorWebView();
+            builder.Services.AddMudServices();
             builder.Services.AddTransient<IProductLogic,ProductLogic>(); // cjm 
             builder.Services.AddTransient<ILocalStorage, SQLiteStorage>(); // cjm
             builder.Services.AddDbContext<SQLiteContext>();

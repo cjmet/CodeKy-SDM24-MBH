@@ -1,0 +1,116 @@
+﻿@page "/muddatagrid"
+@using System.Diagnostics;
+@using SDM24MBH.Data;
+@using SDM24MBH.Logic;
+@inject IProductLogic _productLogic;
+
+<h3>MudDataGrid</h3>
+
+@* // must use T="IProduct" in MudDataGrid for event callbacks to work. *@
+@* // use EditTemplate in place of CellTemplate when DataGridEditMode.Cell  *@
+<MudBlazor.MudDataGrid T="IProduct" Items="@_iProducts.Values" ReadOnly="false" EditMode="DataGridEditMode.Cell"
+                       CommittedItemChanges="@CommittedItemChanges" Filterable="true" SortMode="SortMode.Multiple"
+                       Groupable="true" Hover="false" Dense="true" Striped="true" Bordered="true">
+    <Columns>
+        <PropertyColumn Property="p => p.Id" />
+        <PropertyColumn Property="p => p.Brand" />
+        <PropertyColumn Property="p => p.Name" />
+        <PropertyColumn Property="p => p.Description" />
+        <PropertyColumn Property="p => p.Quantity" />
+        <PropertyColumn Property="p => p.Price" />
+        <TemplateColumn Title="Delete" Hidden="false">
+            <EditTemplate>
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(()=>DeleteProduct(context.Item))" />
+            </EditTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="IProduct" />
+    </PagerContent>
+</MudBlazor.MudDataGrid>
+
+<MudButton OnClick="@LoadProducts" ButtonType="ButtonType.Button">Load Products</MudButton>
+<MudButton OnClick="@SaveProducts" ButtonType="ButtonType.Button">Save Products</MudButton>
+<MudButton OnClick="@ClearStorage" ButtonType="ButtonType.Button">Clear Storage</MudButton>
+
+
+<MudExpansionPanels Style="flex:1" Dense="true">
+    <MudExpansionPanel Text="Show Events"  Expanded="true" Dense="true">
+        @foreach (var message in _events)
+        {
+            <MudText Typo="@Typo.body2">@message</MudText>
+        }
+        @if (_events.Count > 0)
+        {
+            <div class="d-flex">
+                <MudSpacer />
+                <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@(() => _events.Clear())">Clear</MudButton>
+            </div>
+        }
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    private Dictionary<int, IProduct> _iProducts = new Dictionary<int, IProduct>();
+    private List<string> _events = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
+        LogEvent("Load Products()");
+        _iProducts = await _productLogic.GetAllProducts();
+        LogEvent($"   Results: {_iProducts.Count}");
+        if (_iProducts == null || _iProducts.Count <= 0)
+        {
+            _iProducts = TestIProducts.GetTestProducts();
+            LogEvent($"GetTestProducts: {_iProducts.Count}");
+            await SaveProducts();
+        }
+
+    }
+
+    private async Task SaveProducts()
+    {
+        LogEvent("SaveProducts()");
+        var results = await _productLogic.AddUpdateProducts(_iProducts);
+        LogEvent($"   Results: {results}");
+    }
+
+
+    private async Task ClearStorage()
+    {
+        LogEvent("ClearStorage()");
+        _iProducts.Clear();
+        var results = await _productLogic.ClearStorage();
+        LogEvent($"   Results: {results}");
+    }
+
+    // must use T="IProduct" in MudDataGrid for event callbacks to work.
+    private async void CommittedItemChanges(IProduct item)
+    {
+        LogEvent($"CommittedItemChanges(), Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        var singleProduct = new Dictionary<int, IProduct> { { item.Id, item } };
+        var results = await _productLogic.AddUpdateProducts(singleProduct);
+        LogEvent($"   Results: {results}");
+    }
+
+    private async void DeleteProduct(IProduct item)
+    {
+        LogEvent($"DeleteProduct(), Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
+        _iProducts.Remove(item.Id);
+        var singleProduct = new List<int> { item.Id };
+        var results = await _productLogic.DeleteProducts(singleProduct);
+        LogEvent($"   Results: {results}"); 
+    }
+
+    private void LogEvent(string message)
+    {
+        _events.Insert(0, message);
+    }
+
+}
