@@ -4,14 +4,10 @@
 
 The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined the MAUI multi-platform back end to deliver a full multi-platform package.
 
-- Hardware Requirements: **8 physical hardware cores with 12+ gigabytes of memory is recommended.**
-- Class Requirements: Module 3 or Module 4 with some understanding of Async and Await.
-- It should be expected that this project will take **<u>2x the time to develop</u>** as the standard ASP .NET MVC project, but will be able to target multiple platforms.
-- This is a time-budgeted project. I'm trying get a feel for how viable this alternative may be for students and what kind of time investment this should be expected to take for students. I'm also fairly limited in the time I have to devote to this project. It is entirely possible that it will fail to be completed with-in the given time-budget.
-- This is a demo project, so many more complicated topics and features, such as security and authentication, will be left out, simplified, or glossed over.
-- The (web) front-end will be severly simplified for demonstration purposes. Little to no effort will be made to conform to modern web design standards.  We're just trying to get up a quick fast and functional bare bones Maui Blazor Hybrid project.
-- This project will only be targeting windows and android, but the same project should be able to target iOS and Mac as well.
-- Some effort will be made to restrict the project to libraries and features that are compatible with all platforms. Although some platform specific features may be included, such as the use of the android emulator.
+- Hardware Requirements: 
+    - 2 physical cores, 4 threads, 8+ gigabytes of memory is required, but not recommended.
+    - **6 physical hardware cores with 12+ gigabytes of memory is recommended.**
+- Class Requirements: Module 3 or Module 4.
 
 &nbsp;
 ## Table of Contents
@@ -23,17 +19,21 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
   - [Part 1](#part-1)
   - [Part 2](#part-2)
   - [Part 3](#part-3)
+  - [Part 4](#part-4)
+  - [Part 5](#part-5)
+  - [Part 6](#part-6)
 - [Project Blog](#project-blog)
 
 &nbsp;
 ## Development Hardware Requirements
 
-- **8 physical hardware cores with 12+ gigabytes of memory is recommended.**
+- **6 physical hardware cores with 12+ gigabytes of memory is recommended.**
 - Physical hardware SSD with a direct local path, with no spaces in the path names.
   - Ex: c:\users\username\local\Solution47\Project23
+<details>
+<summary>Compiling to Multiple Targets</summary>
 
-### &ensp;Hardware Details
-
+- If you do not have the hardware, do not attempt to complile to non-native targets.
 - 8 performance cores are preferred, but 4 performance cores with 4 additional efficiency cores will work with some impact on performance.
   - As an Example: For Desktops an i7-xx700 or Ryzen 7, Dated 2020 or newer.
   - Notebooks/Mobile, you'll have to lookup the specs.
@@ -57,15 +57,16 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 - Responsiveness vs Peak Performance
   - (6 vCores <sup>P-2</sup>, 16 gb static memory) is considerably more responsive, snappier, vs (12 vCores, 24 gb dynamic memory) which has twice the peak performance under load.
 
-&nbsp;
+</details>
 
+&nbsp;
 ## Important Notes
 
 - Do not modify the .csproj targets, as this can have unintended consequences. As an example, by default the project should restrict the use of incompatible libraries.
-- Do not use underlines, spaces, or other special characters in the project name. Hyphens are allowed but discouraged.
-- ...
+- Do not use underlines, spaces, or other special characters in the project name. Hyphens are allowed.
 
-### &ensp;Additional References
+<details>
+<summary> Additional References </summary>
 
 - [Maui Blazor Platform Features](https://learn.microsoft.com/en-us/training/modules/build-blazor-hybrid/8-platform-features)
   - [Android Platform Specifics](https://learn.microsoft.com/en-us/dotnet/maui/android/platform-specifics/)
@@ -76,13 +77,21 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 - [Preferences]
 - [Local Storage](https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/storage/secure-storage?view=net-maui-8.0&tabs=windows)
 
+#### &emsp;<u>Example Projects</u>
+
+- [Build a Blazor Movie Database](https://learn.microsoft.com/en-us/aspnet/core/blazor/tutorials/movie-database-app/?view=aspnetcore-8.0)
+- [Microsoft: Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app?view=aspnetcore-8.0)
+- [YouTube: Let's build REST API Client Desktop App using .Net MAUI Blazor Hybrid for Windows and Mac OS Desktop](https://www.youtube.com/watch?app=desktop&v=HKMhgOAZLWw)
+- [FreeCodeCamp: Learn Blazor WebAssembly and Web API on .NET 6 by Building a Shopping Cart App](https://www.freecodecamp.org/news/learn-blazor-webassembly-and-web-api-on-net-6-by-building-a-shopping-cart-app/)
+
+</details>
+
 &nbsp;
-
 ## Project Plan
-
 ---
 
 ### Part 1
+<details>
 
 1. Initial Setup and Tutorial
    1. [Microsoft: Build a .NET MAUI Blazor Hybrid app](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui?view=aspnetcore-8.0)
@@ -93,8 +102,10 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
    1. Don't forget to test on Android in addition to Windows
 
 ---
+</details>
 
 ### Part 2
+<details>
 
 1. Apply what we've learned so far to a simplified version of the Pet Shop Project
     1. Keep it Simple and Functional First. We'll add Features Later.
@@ -205,9 +216,10 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 ![Screenshot01](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot01.png?raw=true)
 
 ---
+</details>
 
 ### Part 3
-
+<details>
 1. Visual UI <- Interface ->  Storage
     1. it's time to refactor and start adding in all our pet shop functionality.
 
@@ -305,8 +317,10 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
         1. Now implement and test the rest of the initial methods: ClearStorage, AddProduct, SaveProducts, LoadProducts, DeleteProducts.
         1. Once that's running and tested, make sure the OnInitializedAsync() is working correctly and loading the products from storage correctly as well.
         1. Then double check that you removed all storage code from the Inventory Component and are using the LocalStorage Class instead.  If there is any old code left that accessed storage directly, it should be removed, as it will cause problems later.
+</details>
 
 ### Part 4
+<details>
 
 1. Implement ProductLogic and IProductLogic Classes in the Logic directory
     1. Notes
@@ -535,42 +549,48 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 	1.  More Testing
     1.  And Done with Part 4.   I'm out of time, so we'll add Get by ID next time.
     ![Screenshot02](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot02.png?raw=true)     
-### To Be Continued ...
+
+</details>
 
 ### Part 5
+<details>
+
 - Implemented Entity Framework Core (Single Table) and SQLite 
 - I think I have lost the battle of documentation at this point.
 - I'm going to have to finish the project, then backtrack and redo it in as simplified a form as possible and document that.
 - Documenting it and figuring out how much to document is a real challenge.
 - The Documentation alone, if given enough detail, could take a day for each hour of coding.  I'm struggling finding the right balance here.
 
+</details>
+
 ### Part 6
-- ... 
+- Implement MudBlazor
+
+### Part 7 
+To Be Continued ... 
 
  
-1. ... 
 
-1. 1. Project Structure, more Blazor details, and examples.
-   1. [Project Structure for Blazor Apps](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/project-structure)
-   1. [Build a Blazor Movie Database](https://learn.microsoft.com/en-us/aspnet/core/blazor/tutorials/movie-database-app/?view=aspnetcore-8.0)
-   1. [Microsoft: Build a .NET MAUI Blazor Hybrid app with a Blazor Web App](https://learn.microsoft.com/en-us/aspnet/core/blazor/hybrid/tutorials/maui-blazor-web-app?view=aspnetcore-8.0)
 
-1. ...
-
-1. [YouTube: Let's build REST API Client Desktop App using .Net MAUI Blazor Hybrid for Windows and Mac OS Desktop](https://www.youtube.com/watch?app=desktop&v=HKMhgOAZLWw)
-
-1. [FreeCodeCamp: Learn Blazor WebAssembly and Web API on .NET 6 by Building a Shopping Cart App](https://www.freecodecamp.org/news/learn-blazor-webassembly-and-web-api-on-net-6-by-building-a-shopping-cart-app/)
-1. ...
 
 &nbsp;
+## Project Blog:
+---
 
-### Project Blog:
+#### 2024/10/2
+- More MudBlazor and Learning as much as possible.
 
-#### 2024/08/27
-- This is much harder that it appears, trying to explain do it, explain it, and document it.  Trying to figure out what needs to be said when.
+#### 2024/10/1 
+- MudBlazor
+
+### 2024/09/30
+- EF Core 
+
+#### 2024/09/27
+- This is much harder than it appears, trying to explain do it, explain it, and document it.  Trying to figure out what needs to be said when.
 - Almost done with Part 4.   Part 4 because I decided to split Part 3 into two parts.
 
-#### 2024/08/26
+#### 2024/09/26
 - In the middle of Part 3
 
 #### 2024/09/25

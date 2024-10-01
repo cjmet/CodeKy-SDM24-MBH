@@ -1,23 +1,30 @@
 ﻿@page "/muddatagrid"
-@using System.Diagnostics;
 @using SDM24MBH.Data;
 @using SDM24MBH.Logic;
 @inject IProductLogic _productLogic;
 
 <h3>MudDataGrid</h3>
 
-@* // must use T="IProduct" in MudDataGrid for event callbacks to work. *@
-@* // use EditTemplate in place of CellTemplate when DataGridEditMode.Cell  *@
-<MudBlazor.MudDataGrid T="IProduct" Items="@_iProducts.Values" ReadOnly="false" EditMode="DataGridEditMode.Cell"
-                       CommittedItemChanges="@CommittedItemChanges" Filterable="true" SortMode="SortMode.Multiple"
-                       Groupable="true" Hover="false" Dense="true" Striped="true" Bordered="true">
+@* // must use T="DataType" in MudDataGrid for event callbacks to work. *@
+@* // Always match your Ts in: MudDataGrid, MudDataGridPager, and the event callbacks. *@
+@* // use EditTemplate in place of CellTemplate when DataGridEditMode.Cell / Use CellTemplate when DataEditMode.Form *@
+@* // MudDataGrid->DataEditMode.Form does not support Interface Types.  Deserialization of Interfaces is not supported. *@
+@* //   A) Refactor Everything for Concrete Classes and use the default edit form*@
+@* //   B) Refactor and copy data into Concret Classes in the GUI Only *@
+@* //   C) In-Cell Edit and Page to the New Products Page in the DataGrid, and deal with filters too *@
+@* //   D) In-Cell Edit and Filter for the specific New Product ID *@
+
+<MudBlazor.MudDataGrid @ref="mudDataGrid" T="KeyValuePair<Int32, IProduct>" Items="@_iProducts" ReadOnly="false" EditMode="DataGridEditMode.Cell"
+                       Filterable="true" SortMode="SortMode.Multiple" CommittedItemChanges="@CommittedItemChanges"
+                       Groupable="true" Hover="false" Dense="true" Striped="true" Bordered="true" 
+                       FilterCaseSensitivity="DataGridFilterCaseSensitivity.CaseInsensitive">
     <Columns>
-        <PropertyColumn Property="p => p.Id" />
-        <PropertyColumn Property="p => p.Brand" />
-        <PropertyColumn Property="p => p.Name" />
-        <PropertyColumn Property="p => p.Description" />
-        <PropertyColumn Property="p => p.Quantity" />
-        <PropertyColumn Property="p => p.Price" />
+        <PropertyColumn Property="p => p.Value.Id" />
+        <PropertyColumn Property="p => p.Value.Brand" />
+        <PropertyColumn Property="p => p.Value.Name" />
+        <PropertyColumn Property="p => p.Value.Description" />
+        <PropertyColumn Property="p => p.Value.Quantity" />
+        <PropertyColumn Property="p => p.Value.Price" />
         <TemplateColumn Title="Delete" Hidden="false">
             <EditTemplate>
                 <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="@(()=>DeleteProduct(context.Item))" />
@@ -25,14 +32,15 @@
         </TemplateColumn>
     </Columns>
     <PagerContent>
-        <MudDataGridPager T="IProduct" />
+        <MudDataGridPager T="KeyValuePair<Int32, IProduct>" />
     </PagerContent>
 </MudBlazor.MudDataGrid>
 
 <MudButton OnClick="@LoadProducts" ButtonType="ButtonType.Button">Load Products</MudButton>
-<MudButton OnClick="@SaveProducts" ButtonType="ButtonType.Button">Save Products</MudButton>
-<MudButton OnClick="@ClearStorage" ButtonType="ButtonType.Button">Clear Storage</MudButton>
-
+<MudButton OnClick="@AddProduct" ButtonType="ButtonType.Button">Add Product</MudButton>
+&emsp;
+<MudButton OnClick="@SaveProducts" ButtonType="ButtonType.Button" Style="color: darkgray; font-style: italic;" >Save Products</MudButton>
+<MudButton OnClick="@ClearStorage" ButtonType="ButtonType.Button" Style="color: darkgray; font-style: italic;">Clear Storage</MudButton>
 
 <MudExpansionPanels Style="flex:1" Dense="true">
     <MudExpansionPanel Text="Show Events"  Expanded="true" Dense="true">
@@ -51,8 +59,9 @@
 </MudExpansionPanels>
 
 @code {
-    private Dictionary<int, IProduct> _iProducts = new Dictionary<int, IProduct>();
-    private List<string> _events = new List<string>();
+    private Dictionary<Int32, IProduct> _iProducts = new Dictionary<int, IProduct>();
+    private List<MarkupString> _events = new List<MarkupString>();
+    private MudDataGrid<KeyValuePair<Int32, IProduct>> mudDataGrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,53 +73,79 @@
     {
         LogEvent("Load Products()");
         _iProducts = await _productLogic.GetAllProducts();
-        LogEvent($"   Results: {_iProducts.Count}");
+        LogEvent($"&emsp; Results: {_iProducts.Count}");
         if (_iProducts == null || _iProducts.Count <= 0)
         {
             _iProducts = TestIProducts.GetTestProducts();
             LogEvent($"GetTestProducts: {_iProducts.Count}");
             await SaveProducts();
         }
-
+        if (mudDataGrid != null) await mudDataGrid.ClearFiltersAsync();
     }
 
     private async Task SaveProducts()
     {
         LogEvent("SaveProducts()");
         var results = await _productLogic.AddUpdateProducts(_iProducts);
-        LogEvent($"   Results: {results}");
+        LogEvent($"&emsp; Results: {results}");
     }
-
 
     private async Task ClearStorage()
     {
         LogEvent("ClearStorage()");
         _iProducts.Clear();
         var results = await _productLogic.ClearStorage();
-        LogEvent($"   Results: {results}");
+        LogEvent($"&emsp; Results: {results}");
     }
 
-    // must use T="IProduct" in MudDataGrid for event callbacks to work.
-    private async void CommittedItemChanges(IProduct item)
+    private async void CommittedItemChanges(KeyValuePair<Int32, IProduct> kvp)
     {
+        var item = kvp.Value;
         LogEvent($"CommittedItemChanges(), Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
         var singleProduct = new Dictionary<int, IProduct> { { item.Id, item } };
         var results = await _productLogic.AddUpdateProducts(singleProduct);
-        LogEvent($"   Results: {results}");
+        LogEvent($"&emsp; Results: {results}");
     }
 
-    private async void DeleteProduct(IProduct item)
+    private async void DeleteProduct(KeyValuePair<Int32, IProduct> kvp)
     {
+        var item = kvp.Value;
         LogEvent($"DeleteProduct(), Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
         _iProducts.Remove(item.Id);
         var singleProduct = new List<int> { item.Id };
         var results = await _productLogic.DeleteProducts(singleProduct);
-        LogEvent($"   Results: {results}"); 
+        LogEvent($"&emsp; Results: {results}"); 
     }
 
     private void LogEvent(string message)
     {
-        _events.Insert(0, message);
+        _events.Insert(0,(MarkupString) message);
     }
 
+    private async void AddProduct()
+    {
+        LogEvent("AddProduct()");
+        Int32 newId = _iProducts.Keys.Max() + 1;
+        var newProduct = new Product { Id = newId, Brand = "New Brand", Name = "New Product", Description = "New Description", Quantity = 0, Price = 0.0M };
+        var newIProduct = new Dictionary<int, IProduct> { { newProduct.Id, newProduct } };
+        _iProducts.Add(newProduct.Id, newProduct);
+
+        // Fake it till we make it.
+        // add a filter to show the new product only.
+        var column = mudDataGrid.RenderedColumns.FirstOrDefault(x => x.Title == "Id");
+        var filter = new FilterDefinition<KeyValuePair<Int32, IProduct>>()
+        {
+            Id = new Guid(),
+            Operator = FilterOperator.Number.Equal,
+            Value = newProduct.Id,
+            Title = "Id",
+            Column = column,
+        };
+        await mudDataGrid.ClearFiltersAsync();
+        await mudDataGrid.AddFilterAsync(filter);
+        mudDataGrid.ToggleFiltersMenu();
+        // /Fake
+
+        LogEvent($"&emsp; Added Product: {System.Text.Json.JsonSerializer.Serialize(newProduct)}");
+    }
 }
