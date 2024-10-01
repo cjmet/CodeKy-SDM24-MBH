@@ -52,7 +52,7 @@
 
 @code {
     private Dictionary<int, IProduct> _iProducts = new Dictionary<int, IProduct>();
-    private List<string> _events = new List<string>();
+    private List<MarkupString> _events = new List<MarkupString>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -64,7 +64,7 @@
     {
         LogEvent("Load Products()");
         _iProducts = await _productLogic.GetAllProducts();
-        LogEvent($"   Results: {_iProducts.Count}");
+        LogEvent($"&emsp; Results: {_iProducts.Count}");
         if (_iProducts == null || _iProducts.Count <= 0)
         {
             _iProducts = TestIProducts.GetTestProducts();
@@ -78,7 +78,7 @@
     {
         LogEvent("SaveProducts()");
         var results = await _productLogic.AddUpdateProducts(_iProducts);
-        LogEvent($"   Results: {results}");
+        LogEvent($"&emsp; Results: {results}");
     }
 
 
@@ -87,7 +87,7 @@
         LogEvent("ClearStorage()");
         _iProducts.Clear();
         var results = await _productLogic.ClearStorage();
-        LogEvent($"   Results: {results}");
+        LogEvent($"&emsp; Results: {results}");
     }
 
     // must use T="IProduct" in MudDataGrid for event callbacks to work.
@@ -96,7 +96,7 @@
         LogEvent($"CommittedItemChanges(), Data = {System.Text.Json.JsonSerializer.Serialize(item)}");
         var singleProduct = new Dictionary<int, IProduct> { { item.Id, item } };
         var results = await _productLogic.AddUpdateProducts(singleProduct);
-        LogEvent($"   Results: {results}");
+        LogEvent($"&emsp; Results: {results}");
     }
 
     private async void DeleteProduct(IProduct item)
@@ -105,12 +105,12 @@
         _iProducts.Remove(item.Id);
         var singleProduct = new List<int> { item.Id };
         var results = await _productLogic.DeleteProducts(singleProduct);
-        LogEvent($"   Results: {results}"); 
+        LogEvent($"&emsp; Results: {results}"); 
     }
 
     private void LogEvent(string message)
     {
-        _events.Insert(0, message);
+        _events.Insert(0,(MarkupString) message);
     }
 
 }
