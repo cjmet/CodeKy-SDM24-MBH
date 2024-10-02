@@ -34,36 +34,35 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 <details>
 <summary>Local Path Requirements</summary>
 
-  - Ex: c:\users\username\local\Solution47\Project23
-  - Networked, Subst, and other drive types will fail to publish unless you complete additional configuration options.
-  - [Error DEP0700 : Registration of the app failed.](https://stackoverflow.com/questions/42020845/error-dep0700-registration-of-the-app-failed-on-windows-10-on-a-macbook-dual)
+- Ex: c:\users\username\local\Solution47\Project23
+- Networked, Subst, and other drive types will fail to publish unless you complete additional configuration options.
+- [Error DEP0700 : Registration of the app failed.](https://stackoverflow.com/questions/42020845/error-dep0700-registration-of-the-app-failed-on-windows-10-on-a-macbook-dual)
 </details>
-  
+
 <details>
 <summary>Requirements for Compiling to Multiple Targets</summary>
 
 - If you do not have the hardware, do not attempt to complile to non-native targets.
 - 8 performance cores are preferred, but 4 performance cores with 4 additional efficiency cores will work with some impact on performance.
-  - As an Example: For Desktops an i7-xx700 or Ryzen 7, Dated 2020 or newer.
-  - Notebooks/Mobile, you'll have to lookup the specs.
-  - **<u>4+ Physical Hardware Cores**</u> on Bare Metal Hardware are **<u>REQUIRED</u>**
-  - Windows 11 compatible cores dated 2020 or newer are recommended, but not required.
-    - A 2025 i7-14700 is up to 80% faster than a 2020 i7-10700.
-    - Windows 10 expires Fall of 2025.
-  - The emulator needs 4 cores, and you need 2 additional cores on the host to support it. Then you need a couple more cores to support other processes, programs, and tabs running on the host.
-    - **4 Cores:** If you have only 4 cores, you'll have to set the emulator to only use 2 cores, the default is 4 cores for the emulator. The emulator will then be running at half speed, and you'll have no resources left to support other programs and will have to keep everything non-essential closed when testing in the emulator. This is not recommended.
-    - **6 Cores:** If you have only 6 cores, you'll have no extra resources to support processes on the host and will have to keep non-essential programs and tabs closed when testing in the emulator. But at least the emulator will run at full speed.
-    - **8+ Cores:** will give you enough cores for the emulator, system support, and a couple left over to run additional processes and programs on the host.
-  - The android emulator will not run in a VM<sup>\*</sup>
-    - There are ways around this, but I'm not going into additional admin issues that will un-necessarily complicate things. If you are a student just now learning, I recommend you make sure you have the required hardware first, (6 cores), then you can focus all your time on learning C#, Maui, and Blazor.
-    - Additional Cloud VM testing also failed.
-    - A physical Android device can be used instead of the emulator, but the emulator is the recommended testing platform.
-
+- As an Example: For Desktops an i7-xx700 or Ryzen 7, Dated 2020 or newer.
+- Notebooks/Mobile, you'll have to lookup the specs.
+- **<u>4+ Physical Hardware Cores**</u> on Bare Metal Hardware are **<u>REQUIRED</u>**
+- Windows 11 compatible cores dated 2020 or newer are recommended, but not required.
+- A 2025 i7-14700 is up to 80% faster than a 2020 i7-10700.
+- Windows 10 expires Fall of 2025.
+- The emulator needs 4 cores, and you need 2 additional cores on the host to support it. Then you need a couple more cores to support other processes, programs, and tabs running on the host.
+- **4 Cores:** If you have only 4 cores, you'll have to set the emulator to only use 2 cores, the default is 4 cores for the emulator. The emulator will then be running at half speed, and you'll have no resources left to support other programs and will have to keep everything non-essential closed when testing in the emulator. This is not recommended.
+- **6 Cores:** If you have only 6 cores, you'll have no extra resources to support processes on the host and will have to keep non-essential programs and tabs closed when testing in the emulator. But at least the emulator will run at full speed.
+- **8+ Cores:** will give you enough cores for the emulator, system support, and a couple left over to run additional processes and programs on the host.
+- The android emulator will not run in a VM<sup>\*</sup>
+- There are ways around this, but I'm not going into additional admin issues that will un-necessarily complicate things. If you are a student just now learning, I recommend you make sure you have the required hardware first, (6 cores), then you can focus all your time on learning C#, Maui, and Blazor.
+- Additional Cloud VM testing also failed.
+- A physical Android device can be used instead of the emulator, but the emulator is the recommended testing platform.
 
 ### &ensp;Personal VM Note
 
 - Responsiveness vs Peak Performance
-  - (6 vCores <sup>P-2</sup>, 16 gb static memory) is considerably more responsive, snappier, vs (12 vCores, 24 gb dynamic memory) which has twice the peak performance under load.
+- (6 vCores <sup>P-2</sup>, 16 gb static memory) is considerably more responsive, snappier, vs (12 vCores, 24 gb dynamic memory) which has twice the peak performance under load.
 
 </details>
 
@@ -123,88 +122,60 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 <details>
 
 1.  Apply what we've learned so far to a simplified version of the Pet Shop Project 1. Keep it Simple and Functional First. We'll add Features Later. 1. `async void` should only be used for event handlers. 1. `async Task` should be used for all other 'async void' methods. 1. Add a modified Product Class and Interface from the Petshop to the Data Folder. 1. Be aware of name spaces. 1. Lets keep it simple and only one basic Class. 1. Add an unique Id field. We'll use this to identify items in a dictionary. 1. Add an isSelected field. We'll use this to identify items selected for actions like Add, Delete, Update, Purchase, etc.
-    `            public class Product : IProduct
+    `           public class Product : IProduct
+        {
+            public Int32 Id { get; set; }
+            public Boolean isSelected { get; set; } = false;
+            public String Brand { get; set; } = "";
+            public String Name { get; set; } = "";
+            public String Description { get; set; } = "";
+            public Decimal Price { get; set; }
+            public Int32 Quantity { get; set; }
+        }
+      ` 1. Add an Inventory link to the Nav 1. Add an Inventory.razor component 1. Have it display up to 10 lines of inventory, we can add paging later.
+    `           @{counter = 0;}
+        <ul class="list-unstyled">
+            @foreach (var product in _products)
             {
-                public Int32 Id { get; set; }
-                public Boolean isSelected { get; set; } = false;
-                public String Brand { get; set; } = "";
-                public String Name { get; set; } = "";
-                public String Description { get; set; } = "";
-                public Decimal Price { get; set; }
-                public Int32 Quantity { get; set; }
-            }
-           ` 1. Add an Inventory link to the Nav 1. Add an Inventory.razor component 1. Have it display up to 10 lines of inventory, we can add paging later.
-    `            @{counter = 0;}
-            <ul class="list-unstyled">
-                @foreach (var product in _products)
+                if (++counter > 10) {
+                    @("Too many products");
+                    break;
+                }
+                @* --- Snipped for Brevity --- *@
+      ` 1. Another non-standard way to do this would be a span, but it throws a warning:
+    `           <span>Too many products</span> 
+      ` 1. Model it after the ToDo page. 1. You'll need Buttons and Inputs for CRUD: Add, Load, Save, and Delete 1. We want to keep things simple and functional first. Get the skeleton's syntax and struture correct and functioning first. So for now just set the buttons up with a simple alert message. We'll fix the actual functions later.
+    `           private async Task NIA()
+        {
+            await App.Current.MainPage.DisplayAlert("NIA", $"Not Implemented Alert.", "OK");
+            return;
+        }
+      ` 1. Don't forget the @page and @use directives at the top of the file.
+    `           @page "/inventory"
+        @using YourProjectName.Data;
+      ` 1. Add 9 or 10 products for testing in an initial statement in the code block if you have not already.
+    `           private Dictionary<int, Product> _products = new Dictionary<int, Product>
+        {
+            { 1, new Product { Id = 1, Name = "Product 1", Description="Description 1", Price = 100, Quantity = 1 } },
+            { 2, new Product { Id = 2, Name = "Product 2", Description="Description 2", Price = 200, Quantity = 2 } },
+            { 3, new Product { Id = 3, Name = "Product 3", Description="Description 3", Price = 300, Quantity = 3 } },
+            // --- Snipped for Brevity ---
+      `
+    1.  Test that and make sure everything is working and wired up correctly. 1. You should probably check that the dictionary keys match the product ids. 1. Something like `<label>@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>` 1. Then create one product that purposely has a mismatched key and id to test it. 1. Now lets wire up those buttons. 1. Begin with the Add Buttton, this should be just like what you did in the tutorials. 1. make sure to use an unique Id for each product. Ex: `var Id = _products.Keys.Max() + 1;` 1. Don't forget to set the product.ID field as well as the Dictionay.Key. 1. After You've added the product, clear the input fields. 1. The easiest way to do this is to just new up a product in the bound input variable. 1. `newProduct = new Product();` 1. Test it. 1. Then move on to the other buttons, testing each one as you go. 1. We should really load the products from file by default. 1. [Microsoft: Blazor Component lifecycle](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/components#component-lifecycle) 1. Lets try OnInitializedAsync()...
+        `                protected override async Task OnInitializedAsync()
                 {
-                    if (++counter > 10) {
-                        @("Too many products");
-                        break;
-                    }
-                    @* --- Snipped for Brevity --- *@
-           ` 1. Another non-standard way to do this would be a span, but it throws a warning:
-    `            <span>Too many products</span> 
-           ` 1. Model it after the ToDo page. 1. You'll need Buttons and Inputs for CRUD: Add, Load, Save, and Delete 1. We want to keep things simple and functional first. Get the skeleton's syntax and struture correct and functioning first. So for now just set the buttons up with a simple alert message. We'll fix the actual functions later.
-    `            private async Task NIA()
-            {
-                await App.Current.MainPage.DisplayAlert("NIA", $"Not Implemented Alert.", "OK");
-                return;
-            }
-           ` 1. Don't forget the @page and @use directives at the top of the file.
-    `            @page "/inventory"
-            @using YourProjectName.Data;
-           ` 1. Add 9 or 10 products for testing in an initial statement in the code block if you have not already.
-    `            private Dictionary<int, Product> _products = new Dictionary<int, Product>
-            {
-                { 1, new Product { Id = 1, Name = "Product 1", Description="Description 1", Price = 100, Quantity = 1 } },
-                { 2, new Product { Id = 2, Name = "Product 2", Description="Description 2", Price = 200, Quantity = 2 } },
-                { 3, new Product { Id = 3, Name = "Product 3", Description="Description 3", Price = 300, Quantity = 3 } },
-                // --- Snipped for Brevity ---
-           `  
-     1. Test that and make sure everything is working and wired up correctly.
-         1. You should probably check that the dictionary keys match the product ids.
-            1. Something like `<label>@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>`
-            1. Then create one product that purposely has a mismatched key and id to test it.
-         1. Now lets wire up those buttons.
-            1. Begin with the Add Buttton, this should be just like what you did in the tutorials.
-                1. make sure to use an unique Id for each product. Ex: `var Id = _products.Keys.Max() + 1;`
-                1. Don't forget to set the product.ID field as well as the Dictionay.Key.
-                1. After You've added the product, clear the input fields.
-                    1. The easiest way to do this is to just new up a product in the bound input variable.
-                    1. `newProduct = new Product();`
-                1. Test it.
-            1. Then move on to the other buttons, testing each one as you go.
-            1. We should really load the products from file by default.
-                1. [Microsoft: Blazor Component lifecycle](https://learn.microsoft.com/en-us/dotnet/architecture/blazor-for-web-forms-developers/components#component-lifecycle)
-                1. Lets try OnInitializedAsync()...
-                    ```
-                    protected override async Task OnInitializedAsync()
-                    {
-                        await base.OnInitializedAsync();
-                        await LoadProducts();
-                    }
-                    ```
-            1. Lets do a little cleaning and comment out the Counter and Weather Nav Options.  This should leave Home, Todo, and Inventory.
-            1. Maybe clean up the Home Page and make things prettier.  Maybe add a little more information about the project.  Whatever you think is appropriate.
-            1. Lets add a Logo to Home.Razor
-                1. [Display images and documents in ASP.NET Core Blazor](https://learn.microsoft.com/en-us/aspnet/core/blazor/images-and-documents?view=aspnetcore-8.0)
-                1. copy logo.png to wwwroot
-                1. `<img src="logo.png" alt="Logo" />`
-            1. Don't forget to test on Android as well as Windows.
-         1. Spacing?  I know I said minimal skeleton, but it really needs at least a microscopic amount of work.
-            1. Ex:
-                ```
-                @* --- Snipped for Brevity --- *@
-                <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
-                @* --- Snipped for Brevity --- *@
-                <input @bind="product.Value.Description" style="width: 30em;" />
-                <label> &nbsp Qty:</label><input @bind="product.Value.Quantity" type="number" style="width: 4em; text-align: right;" />
-                <label> &nbsp  $</label><input @bind="product.Value.Price" type="number" style="width: 5.25em; text-align: right;" />
-                ```
-            1. We should probably do tables or grids instead.  But that's a bit more complicated, so we'll leave that for later.
-            1. That description width is probably going to bite us on android.  It may need to be smaller.  It might need to be a different component all together.  We'll see.
-    ![Screenshot01](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot01.png?raw=true)
+                    await base.OnInitializedAsync();
+                    await LoadProducts();
+                }
+               ` 1. Lets do a little cleaning and comment out the Counter and Weather Nav Options. This should leave Home, Todo, and Inventory. 1. Maybe clean up the Home Page and make things prettier. Maybe add a little more information about the project. Whatever you think is appropriate. 1. Lets add a Logo to Home.Razor 1. [Display images and documents in ASP.NET Core Blazor](https://learn.microsoft.com/en-us/aspnet/core/blazor/images-and-documents?view=aspnetcore-8.0) 1. copy logo.png to wwwroot 1. `<img src="logo.png" alt="Logo" />` 1. Don't forget to test on Android as well as Windows. 1. Spacing? I know I said minimal skeleton, but it really needs at least a microscopic amount of work. 1. Ex:
+        `            @* --- Snipped for Brevity --- *@
+            <label style="width:2em; text-align: right;">@(product.Key != product.Value.Id ? $"KeyError[{product.Key}]" : product.Key)</label>
+            @* --- Snipped for Brevity --- *@
+            <input @bind="product.Value.Description" style="width: 30em;" />
+            <label> &nbsp Qty:</label><input @bind="product.Value.Quantity" type="number" style="width: 4em; text-align: right;" />
+            <label> &nbsp  $</label><input @bind="product.Value.Price" type="number" style="width: 5.25em; text-align: right;" />
+           ` 1. We should probably do tables or grids instead. But that's a bit more complicated, so we'll leave that for later. 1. That description width is probably going to bite us on android. It may need to be smaller. It might need to be a different component all together. We'll see.
+        ![Screenshot01](https://github.com/cjmet/CodeKy-SDM24-MBH/blob/main/SDM24MBH/Files/Screenshot01.png?raw=true)
 
 ---
 
@@ -244,9 +215,11 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
           ```
        1. Test it.
 
-1.  Now lets fix the foundation of ILocalStorage and Storage Classes ... later these will be refactored into SQL. 1. Create an ILocalStorage Interface and LocalStorage Class in the Data directory, and Implement the LocalStorage Class by moving the storage functionality from Inventory.razor to LocalStorage. 1. LocalStorage "restriction that a setting name length may be 255 characters at the most. Each setting can be up to 8K bytes in size, and each composite setting can be up to 64 K bytes in size." 1. We should probably just go ahead and use file storage instead.  
-     1. Keep in mind you can NOT deserialize an interface, so you'll need to use the concrete class in the dictionary and then convert it as needed.
-    ```
+1.  Now lets fix the foundation of ILocalStorage and Storage Classes ... later these will be refactored into SQL. 1. Create an ILocalStorage Interface and LocalStorage Class in the Data directory, and Implement the LocalStorage Class by moving the storage functionality from Inventory.razor to LocalStorage. 1. LocalStorage "restriction that a setting name length may be 255 characters at the most. Each setting can be up to 8K bytes in size, and each composite setting can be up to 64 K bytes in size." 1. We should probably just go ahead and use file storage instead.
+
+    1.  Keep in mind you can NOT deserialize an interface, so you'll need to use the concrete class in the dictionary and then convert it as needed.
+
+    ````
     public class LocalStorage : ILocalStorage
     {
     public async Task<Boolean> ClearStorage()
@@ -311,6 +284,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
             1. Now implement and test the rest of the initial methods: ClearStorage, AddProduct, SaveProducts, LoadProducts, DeleteProducts.
             1. Once that's running and tested, make sure the OnInitializedAsync() is working correctly and loading the products from storage correctly as well.
             1. Then double check that you removed all storage code from the Inventory Component and are using the LocalStorage Class instead.  If there is any old code left that accessed storage directly, it should be removed, as it will cause problems later.
+    ````
 
 </details>
 
@@ -560,7 +534,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 <details>
 
-- Implemented Entity Framework Core (Single Table) and SQLite
+- (9) Implemented Entity Framework Core (Single Table) and SQLite
 - I think I have lost the battle of documentation at this point.
 - I'm going to have to finish the project, then backtrack and redo it in as simplified a form as possible and document that.
 - Documenting it and figuring out how much to document is a real challenge.
@@ -574,7 +548,16 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 ### Part 7
 
-- To Be Continued ...
+- (10) Add Orders 
+
+### Part 8 
+- (Other) Add OrderItems with Item, OrderQty, OrderPrice,
+
+### Part 9
+- (11) Add API 
+
+### Part 10
+- (12) Async/Await ... been there for a while now.
 
 &nbsp;
 
