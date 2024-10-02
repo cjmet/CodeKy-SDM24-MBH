@@ -20,7 +20,7 @@ namespace SDM24MBH.Data
         {
             if (product == null) return 0;
             var _products = _dbcontext.Products;
-            _products.Add((Product) product);
+            _products.Add((Product)product);
             var results = await _dbcontext.SaveChangesAsync();
 
             return results > 0 ? product.Id : 0;

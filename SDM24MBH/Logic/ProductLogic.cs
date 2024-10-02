@@ -1,5 +1,4 @@
 ﻿using SDM24MBH.Data;
-using SDM24MBH.Logic;
 using System.Diagnostics;
 
 
@@ -41,20 +40,20 @@ namespace SDM24MBH.Logic
 
         public async Task<Int32> DeleteProducts(List<Int32> keysToDelete)
         {
-           var results = await _localStorage.DeleteProducts(keysToDelete);
+            var results = await _localStorage.DeleteProducts(keysToDelete);
             return results;
         }
 
         public async Task<Dictionary<Int32, IProduct>> GetInStockProducts()
         {
             var data = await GetAllProducts();
-            var results =  data.Where(p => p.Value.Quantity > 0).ToDictionary(p => p.Key, p => p.Value);
+            var results = data.Where(p => p.Value.Quantity > 0).ToDictionary(p => p.Key, p => p.Value);
             return results;
         }
 
         public async Task<Dictionary<Int32, IProduct>> GetOutOfStockProducts()
         {
-            var data =  await GetAllProducts();
+            var data = await GetAllProducts();
             var results = data.Where(p => p.Value.Quantity <= 0).ToDictionary(p => p.Key, p => p.Value);
             return results;
         }
@@ -62,7 +61,7 @@ namespace SDM24MBH.Logic
         public async Task<Decimal> GetTotalValueOfStock()
         {
             var data = await GetAllProducts();
-            var results = data.Sum(p => (p.Value.Quantity >= 0 ? p.Value.Quantity : 0 ) * p.Value.Price );
+            var results = data.Sum(p => (p.Value.Quantity >= 0 ? p.Value.Quantity : 0) * p.Value.Price);
             return results;
         }
     }

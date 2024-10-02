@@ -1,7 +1,4 @@
-﻿
-using System.Diagnostics;
-using System.Text.Json;
-using Microsoft.Maui.Storage;
+﻿using System.Text.Json;
 
 namespace SDM24MBH.Data
 {
@@ -66,7 +63,7 @@ namespace SDM24MBH.Data
             foreach (var key in keysToDelete)
                 if (products.ContainsKey(key)) products.Remove(key);
             var result = startCount - await SaveProducts(products);
-            return result == keysToDelete.Count ? result : - result;
+            return result == keysToDelete.Count ? result : -result;
         }
         // --- 
     }
