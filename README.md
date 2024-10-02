@@ -31,10 +31,16 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 - **6 physical hardware cores with 12+ gigabytes of memory is recommended.**
 - Physical hardware SSD with a direct local path, with no spaces in the path names.
+<details>
+<summary>Local Path Requirements</summary>
 
   - Ex: c:\users\username\local\Solution47\Project23
-  <details>
-  <summary>Compiling to Multiple Targets</summary>
+  - Networked, Subst, and other drive types will fail to publish unless you complete additional configuration options.
+  - [Error DEP0700 : Registration of the app failed.](https://stackoverflow.com/questions/42020845/error-dep0700-registration-of-the-app-failed-on-windows-10-on-a-macbook-dual)
+</details>
+  
+<details>
+<summary>Requirements for Compiling to Multiple Targets</summary>
 
 - If you do not have the hardware, do not attempt to complile to non-native targets.
 - 8 performance cores are preferred, but 4 performance cores with 4 additional efficiency cores will work with some impact on performance.
@@ -52,8 +58,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
     - There are ways around this, but I'm not going into additional admin issues that will un-necessarily complicate things. If you are a student just now learning, I recommend you make sure you have the required hardware first, (6 cores), then you can focus all your time on learning C#, Maui, and Blazor.
     - Additional Cloud VM testing also failed.
     - A physical Android device can be used instead of the emulator, but the emulator is the recommended testing platform.
-- Networked, Subst, and other drive types will fail to publish unless you complete additional configuration options.
-  - [Error DEP0700 : Registration of the app failed.](https://stackoverflow.com/questions/42020845/error-dep0700-registration-of-the-app-failed-on-windows-10-on-a-macbook-dual)
+
 
 ### &ensp;Personal VM Note
 
@@ -307,7 +312,7 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
             1. Once that's running and tested, make sure the OnInitializedAsync() is working correctly and loading the products from storage correctly as well.
             1. Then double check that you removed all storage code from the Inventory Component and are using the LocalStorage Class instead.  If there is any old code left that accessed storage directly, it should be removed, as it will cause problems later.
 
-    </details>
+</details>
 
 ### Part 4
 
@@ -565,11 +570,11 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 ### Part 6
 
-- Implement MudBlazor
+- Implemented MudBlazor
 
 ### Part 7
 
-To Be Continued ...
+- To Be Continued ...
 
 &nbsp;
 
