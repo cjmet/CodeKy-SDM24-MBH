@@ -565,6 +565,9 @@ The MAUI Blazor Hybrid framework uses the more mature Blazor front end combined 
 
 ---
 
+#### 2024/10/2 ammended
+- Added Bootstrap back in ... I can't tell that it helped much.  I'll do more testing but plan on leaving it as-is.
+
 #### 2024/10/2
 
 - More MudBlazor and Learning as much as possible.

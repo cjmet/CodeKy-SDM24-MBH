@@ -5,6 +5,7 @@ namespace SDM24MBH.Data
 
     public static class TestIProducts
     {
+        // Test products created by Copilot and then modified.
         public static readonly List<IProduct> Products = new List<IProduct>
         {
             new Product(1, "Primal Pet Foods", "Primal Powerhouse", "Raw-infused kibble packed with real meat, organs, and bones", 0.01m, 9999),
