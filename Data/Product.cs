@@ -1,4 +1,4 @@
-﻿namespace SDM24MBH.Data
+﻿namespace Data
 {
     public class Product : IProduct
     {

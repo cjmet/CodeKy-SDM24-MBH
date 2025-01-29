@@ -3,7 +3,7 @@ using System.Data;
 using System.Diagnostics;
 
 
-namespace SDM24MBH.Data
+namespace Data
 {
     public class SQLiteStorage : ILocalStorage
     {

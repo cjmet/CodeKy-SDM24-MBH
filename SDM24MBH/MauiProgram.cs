@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using SDM24MBH.Data;
+using Data;
 using SDM24MBH.Logic;
 
 namespace SDM24MBH

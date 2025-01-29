@@ -1,6 +1,6 @@
 ﻿
 
-namespace SDM24MBH.Data
+namespace Data
 {
     public interface IProduct
     {

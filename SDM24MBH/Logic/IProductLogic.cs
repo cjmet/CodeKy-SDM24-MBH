@@ -1,4 +1,4 @@
-﻿using SDM24MBH.Data;
+﻿using Data;
 
 namespace SDM24MBH.Logic
 {
